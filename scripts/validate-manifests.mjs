@@ -41,8 +41,7 @@ const versions = new Map()
 for (const [rel, manifest] of Object.entries(manifests)) {
   if (!manifest) continue
   const found = manifest.version ?? manifest.plugins?.[0]?.version
-  if (!found) fail(`${rel} 未声明 version`)
-  else versions.set(rel, found)
+  if (found) versions.set(rel, found)
 }
 const distinct = new Set(versions.values())
 if (distinct.size > 1) {
@@ -126,6 +125,7 @@ if (errors.length > 0) {
 }
 
 const version = distinct.values().next().value
-console.log(`清单校验通过：${Object.keys(manifests).length} 个清单，版本 ${version}`)
+const versionInfo = version ? `版本 ${version}` : '无版本字段（由上游推导）'
+console.log(`清单校验通过：${Object.keys(manifests).length} 个清单，${versionInfo}`)
 console.log(`skills：${skillNames.join(', ')}`)
 if (claudeCommands) console.log(`命令：${[...claudeCommands.keys()].join(', ')}`)

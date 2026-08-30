@@ -6,7 +6,6 @@
   "plugins": [
     {
       "name": "dsh-plugin-upgrade-skill",
-      "version": "0.1.0",
       "description": "DeepSeek Harness plugin upgrade assistant with migration guides and community examples",
       "source": {
         "source": "local",
