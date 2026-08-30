@@ -1,13 +1,6 @@
 # macOS
 .DS_Store
 
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
 # Environment variables
 .env
 .env.*
@@ -22,15 +15,3 @@ pnpm-debug.log*
 *.swp
 *.swo
 *~
-
-# Test coverage
-coverage/
-
-# Agent caches
-.claude/.simplify-ignore-cache/
-.claude/sdd-cache/
-__pycache__/
-
-# Build outputs
-dist/
-build/

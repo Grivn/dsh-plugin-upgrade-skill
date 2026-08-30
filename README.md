@@ -25,15 +25,15 @@ npx skills add oh-my-dsh/dsh-plugin-upgrade-skill
 
 **Marketplace 安装**：
 
-```bash
+```
 /plugin marketplace add oh-my-dsh/dsh-plugin-upgrade-skill
-/plugin install dsh-plugin-upgrade-skill
+/plugin install dsh-plugin-upgrade-skill@dsh-plugin-upgrade-skill
 ```
 
 > **SSH 错误？**如果没有配置 GitHub SSH 密钥，使用 HTTPS URL：
-> ```bash
+> ```
 > /plugin marketplace add https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill.git
-> /plugin install dsh-plugin-upgrade-skill
+> /plugin install dsh-plugin-upgrade-skill@dsh-plugin-upgrade-skill
 > ```
 > 或全局配置 Git 重写 SSH 为 HTTPS：
 > ```bash
@@ -49,58 +49,41 @@ claude --plugin-dir /path/to/dsh-plugin-upgrade-skill
 
 ### Codex
 
-通过 marketplace 或本地目录安装：
+添加 marketplace 后在 ChatGPT 桌面应用的 Plugins Directory 浏览器里安装：
 
 ```bash
-# Marketplace
-codex plugin add oh-my-dsh/dsh-plugin-upgrade-skill
-
-# 本地
-git clone https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill.git
-codex plugin add ./dsh-plugin-upgrade-skill
+codex plugin marketplace add oh-my-dsh/dsh-plugin-upgrade-skill
 ```
+
+然后打开 ChatGPT → Plugins → Browse → 选择 `dsh-plugin-upgrade-skill` 安装。
 
 ### Gemini CLI
 
-直接从仓库或本地克隆安装：
+Gemini 需要同时安装 skills 和命令：
 
 ```bash
-# 从仓库
+# 安装 skills
 gemini skills install https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill.git --path skills
 
-# 本地
+# 安装命令（复制 .gemini/commands/ 到 ~/.gemini/commands/ 或项目 .gemini/commands/）
 git clone https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill.git
-gemini skills install ./dsh-plugin-upgrade-skill/skills/
-```
-
-### Cursor
-
-将 `skills/` 复制到 `.cursor/skills/`：
-
-```bash
-git clone https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill.git
-cp -r dsh-plugin-upgrade-skill/skills/* .cursor/skills/
+cp -r dsh-plugin-upgrade-skill/.gemini/commands/* ~/.gemini/commands/
 ```
 
 ## 使用
 
-### 斜杠命令（Claude / Gemini）
+### 斜杠命令
 
-安装后可使用 `/dsh-upgrade` 命令：
-
-```bash
-/dsh-upgrade 0.1.2
-```
-
-或直接在对话中提问：
+Claude 用户用插件命名空间调用，Gemini 用户用命令名调用：
 
 ```
-我需要把插件从 0.1.1 升级到 0.1.2，有哪些破坏性变更？
+/dsh-plugin-upgrade-skill:dsh-upgrade 0.1.2   # Claude Code
+/dsh-upgrade 0.1.2                            # Gemini CLI
 ```
 
 ### Skill 调用（任意 agent）
 
-对于没有斜杠命令的 agent，直接引用 skill：
+没有斜杠命令的 agent 直接引用 skill：
 
 ```
 使用 plugin-upgrade skill 帮我升级 DSH 插件到 0.1.2

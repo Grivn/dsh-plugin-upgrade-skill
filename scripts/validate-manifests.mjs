@@ -97,7 +97,7 @@ function collectCommands(dir, ext, extract) {
   return out
 }
 
-const claudeCommands = collectCommands('.claude/commands', '.md', (text) =>
+const claudeCommands = collectCommands('commands', '.md', (text) =>
   /^description:\s*(.+)$/m.exec(text)?.[1].trim(),
 )
 const geminiCommands = collectCommands('.gemini/commands', '.toml', (text) =>
@@ -109,10 +109,10 @@ if (claudeCommands && geminiCommands) {
     if (!geminiCommands.has(name)) fail(`命令 ${name} 缺少 .gemini/commands/${name}.toml`)
   }
   for (const name of geminiCommands.keys()) {
-    if (!claudeCommands.has(name)) fail(`命令 ${name} 缺少 .claude/commands/${name}.md`)
+    if (!claudeCommands.has(name)) fail(`命令 ${name} 缺少 commands/${name}.md`)
   }
   for (const [name, description] of claudeCommands) {
-    if (!description) fail(`.claude/commands/${name}.md 缺少 description`)
+    if (!description) fail(`commands/${name}.md 缺少 description`)
     else if (geminiCommands.has(name) && geminiCommands.get(name) !== description) {
       fail(`命令 ${name} 的 description 在 Claude 与 Gemini 之间不一致`)
     }

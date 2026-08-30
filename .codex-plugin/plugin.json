@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-upgrade-skill",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "DeepSeek Harness plugin upgrade assistant with migration guides and examples from community practice",
   "author": {
     "name": "oh-my-dsh contributors",
@@ -17,7 +17,8 @@
     "developerName": "oh-my-dsh",
     "category": "Productivity",
     "capabilities": [
-      "Read"
+      "Read",
+      "Write"
     ],
     "defaultPrompt": [
       "Help me upgrade my DSH plugin to version X",

@@ -1,13 +1,13 @@
 {
-  "name": "dsh-plugin-upgrade-skill",
+  "name": "local-repo",
   "interface": {
     "displayName": "DSH Plugin Upgrade"
   },
   "plugins": [
     {
       "name": "dsh-plugin-upgrade-skill",
-      "version": "0.2.0",
-      "description": "DeepSeek Harness plugin upgrade assistant with version-agnostic migration guides and community examples",
+      "version": "0.1.0",
+      "description": "DeepSeek Harness plugin upgrade assistant with migration guides and community examples",
       "source": {
         "source": "local",
         "path": "./"
