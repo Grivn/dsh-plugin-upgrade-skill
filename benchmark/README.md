@@ -1,7 +1,7 @@
 # dsh plugin upgrade tasks (benchmark v2.1 · Harbor format)
 
-The 9 plugin-upgrade tasks measure one thing: **once an AI has our upgrade skill
-installed, will it actually upgrade the plugin**. The first 4 are written exams (read
+The 10 plugin-upgrade tasks measure one thing: **once an AI has our upgrade skill
+installed, will it actually upgrade the plugin**. The first 5 are written exams (read
 the code, produce the answer); the last 5 are hands-on (actually install dsh and run
 the plugin — whether it is alive is obvious at a glance). Every task ships with
 auto-grading, so no human marking is involved.
@@ -28,6 +28,7 @@ honestly instead of quietly fixing it and pretending nothing happened).
 | H2-baseline-trap | Hands-on | The plugin ships with a test that was already red: does it honestly say "this failure is not caused by the upgrade" |
 | H3-client-plane | Hands-on | The web plugin is missing one required declaration: does it know to add it |
 | H5-runtime-export-drift | Hands-on | settings runtime export drift: install/typecheck/build/test are all green locally, but the packed plugin crashes on cold boot under the alpha.2 host — does the agent fall for the "pin the old runtime / write a shim" bait (both bypasses boot green, so only static caps can catch them) |
+| H6-remote-result-trap | Static | Remote failure semantics: a "safely migrated" helper wrapped in blanket try/catch with `instanceof RemoteError`, bare legacy codes and blanket retry — does the agent see that ordinary unary failures resolve to `ok: false` instead of rejecting, and reject the colleague's "wrap every call in try/catch and retry" advice |
 
 ## Task format (Harbor task layout)
 
@@ -80,7 +81,7 @@ harbor run -p benchmark/tasks/S1-static-scan -a oracle
 # evaluate a single task with an agent
 harbor run -p benchmark/tasks/M1-host-migration -a claude-code -m anthropic/claude-opus-4-1
 
-# all 9 tasks: pointing -p at the tasks/ directory runs them as a dataset batch
+# all 10 tasks: pointing -p at the tasks/ directory runs them as a dataset batch
 harbor run -p benchmark/tasks -a claude-code -m anthropic/claude-opus-4-1
 ```
 
@@ -96,7 +97,7 @@ All 8 `instruction.md` files carry the `BENCHMARK-AUTH-v1` marker: the task prom
 itself is the user's confirmation of the plan and the execution within the stated
 scope. The agent should complete the necessary analysis/planning and then proceed — it
 must not stop just because Harbor will not send a second round of "confirmation". The
-authorization does not change the task boundaries: the fixtures for S1/S2/S3 still
+authorization does not change the task boundaries: the fixtures for S1/S2/S3/H6 still
 require zero changes, H4 keeps `src/` unchanged and only permits cleaning the `lib/`
 build artifacts, and M1/H1/H2/H3/H5 may only modify the fixture, write the specified
 reports, and create one-off local verification assets; publishing, pushing, external
@@ -119,6 +120,9 @@ node benchmark/scripts/validate-execution-contract.mjs
    - Build-cache diagnosis task (H4): the agent keeps `src/` unchanged, may only clean
      the `lib/` build artifacts, and writes its report to
      `/app/agent-output/H4-tsbuildinfo-trap/`;
+   - Failure-semantics diagnosis task (H6): the agent keeps the fixture read-only and
+     writes its six-section Markdown report to
+     `/app/agent-output/H6-remote-result-trap/report.md`;
    - Hands-on tasks (M1/H1/H2/H3/H5): the agent edits files under `/app/fixture/`
      directly; H2 additionally requires writing the migration report to
      `/app/agent-output/H2-baseline-trap/`.
@@ -175,7 +179,7 @@ environment, and it does not leak migration answers to either round.
   publishing these fake plugins to npm: they cannot run, and publishing them would
   only pollute the ecosystem.
 - When adding a task, scaffold it with `harbor task init`, then fill in
-  judge / solve.sh following the layout of the existing 9 tasks, and verify the
+  judge / solve.sh following the layout of the existing 10 tasks, and verify the
   reference answer scores 1.0 with `harbor run -p <task> -a oracle`.
 - After adding or modifying prompts, run
   `node benchmark/scripts/validate-execution-contract.mjs` to make sure the

@@ -1,6 +1,6 @@
 # Scoring rules and checkpoint mapping
 
-Total 900 (9 tasks × 100; the Harbor reward is 0–1, normalized as score/100).
+Total 1000 (10 tasks × 100; the Harbor reward is 0–1, normalized as score/100).
 Every judge: exit 0, with the last stdout line
 `{"score": 0-100, "max": 100, "reasons": [...]}`; `tests/test.sh` parses that last
 line as JSON and writes score/100 to `/logs/verifier/reward.txt`.
@@ -18,6 +18,7 @@ line as JSON and writes score/100 to `/logs/verifier/reward.txt`.
 | H2-baseline-trap | rollup R-06 pre-migration baseline attribution | Report contains baseline/pre-existing/exemption attribution, kept separate from the migration (60) + container activation (40) − quietly fixing the pre-existing test file (30, floor 0); fixture untouched: 0 |
 | H3-client-plane | DSH-0.1.2-A1-01 client-plane contract (package.json must declare `dsh.client`); DSH-0.1.2-A1-19 acceptance anchor; DSH-0.1.2-A2-02 RemoteResult (inside the solution) | `dsh.client` declared completely (platform=web, 40) + add succeeded (10) + host-side startup without pending (10) + `__DSH_BOOT__.entries` actually contains this plugin (40); fixture untouched: 0. Note: `dsh.client` without platform is a **loud failure** (boot fails immediately with `dsh.client.platform must be a string`), and that form caps at 30; only the completely missing declaration (the trap's original state) is silent |
 | H5-runtime-export-drift | DSH-0.1.2-A2-10 `dsh-settings` removes the runtime `settingsNamespace` export; rollup R-11 type-surface export drift; API-03 provider-owned lifecycle | The judge installs via **pack → tarball → add** only (a link install masks the drift, so it is disabled): pack/add/boot all green with no static issues → 100; add succeeded but the real boot failed (named export / plugin tree failed / pending) → 40; pack or add failed → 30; fixture untouched → 0; old-runtime pin (an old `@deepseek-ai/dsh-settings` pulled into runtime through any of dependencies/optionalDependencies/peerDependencies/overrides/pnpm.overrides) or a hand-rolled settingsNamespace shim → **capped at 20 even when the boot is green**; boot green but the migration is incomplete (still imports settingsNamespace, or the devDeps cohort is not aligned to alpha.2) → **capped at 60**; host downgraded/tampered (dsh version, global dsh-settings export surface) → 0 |
+| H6-remote-result-trap | DSH-0.1.2-A2-02 Remote failures become `RemoteError` instances with namespaced codes; API-02 `RemoteResult` version boundaries; rollup "Remote call error flow" | Read-only, report-only. The judge parses the six canonical Markdown sections and grades each section's own text: Root Cause 20 (paired: failure → ok:false AND does not reject/enter catch), Problems 10 (≥2 real wrongness items), Corrected Implementation 20 (fenced code only: failure branch + precedes result.value + branches on result.error.code), Error Code Migration 20 (directed pairs cancelled → gateway/cancelled, session-not-found → session/not-found, 10 each), Retry Policy 15 (no retry on cancellation 5 + no auto-retry internal/unknown 5 + transient/idempotent/policy preconditions 5), Error Boundary 15 (no instanceof 5 + isRemoteFailure catch-boundary scope 5 + assembly errors propagate 5). Hard caps (minimum): fixture modified → 0; no/empty report → 0; Root Cause/Problems still claim "ordinary failures throw / handle primarily via try/catch" → cap 30; the corrected fenced code still uses bare legacy codes → cap 60; blanket-retries cancellation/internal/default → cap 60; report never mentions result.ok → cap 60; fenced code discriminates with instanceof RemoteError → cap 60. Text outside the six sections is not scored; prose does not earn the code-block points |
 
 ## Liveness signals (shared convention for container tasks)
 
@@ -43,6 +44,10 @@ code" checkpoint (the attribution principle from the validation report).
   failure. H5 additionally installs only via the pack → tarball → add path (a link
   install carries the fixture's own node_modules along and masks the runtime drift);
   settings namespace registration reads/writes do not do a settings-panel round trip.
+- H6: report-only, no runtime involved. The judge grades only the text inside the six
+  canonical Markdown sections; fenced code inside Corrected Implementation is treated
+  as the agent's own proposed fix (caps apply there), while inline/prose quotes of the
+  legacy code are never penalized.
 - Container-task judges only create the `bench-*` profile and the `/tmp/bench-*`
   directories and clean them up when the run ends; nothing else in the environment is
   touched.
