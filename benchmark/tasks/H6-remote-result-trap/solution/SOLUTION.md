@@ -1,32 +1,38 @@
-# H6 参考解法
+# H6 reference solution
 
-## 考点（一句话）
+## Checkpoint in one sentence
 
-[DSH-0.1.2-A2-02](../../../../skills/plugin-upgrade/references/v0.1.2-alpha.2.md) 与
-[API-02](../../../../skills/plugin-upgrade/references/api-migration-0.1.2-alpha.2.md) 的
-Remote failure 语义：alpha.2 unary Remote 的普通业务/载体/取消失败解析为
-`RemoteResult<T>` 的 `{ ok: false, error }` 分支，**不 reject**；只有装配/编程
-错误（arity、未挂载方法、缺 Context adapter）仍 reject 且必须暴露。参考报告见
-[solution/report.md](report.md)，期望 judge 得分 100。
+The Remote failure semantics of [DSH-0.1.2-A2-02](../../../../skills/plugin-upgrade/references/v0.1.2-alpha.2.md)
+and [API-02](../../../../skills/plugin-upgrade/references/api-migration-0.1.2-alpha.2.md):
+in alpha.2, ordinary business/carrier/cancellation failures of a unary Remote resolve
+to the `{ ok: false, error }` branch of `RemoteResult<T>` — they do **not** reject;
+only assembly/programming errors (arity, unmounted method, missing Context adapter)
+still reject and must be exposed. The reference report is
+[solution/report.md](report.md); the expected judge score is 100.
 
-## 陷阱
+## The trap
 
-fixture 源码顶部的同事建议（"wrap every remote call in try/catch and retry
-whenever a RemoteError occurs"）是故意错误：ok:false 从不进 catch；
-`instanceof RemoteError` 跨 bundle/worker/realm 漏判；旧裸码 `cancelled` /
-`session-not-found` 在 alpha.2 已改为 `gateway/cancelled` / `session/not-found`；
-cancellation 与 internal/未知码被无差别重试；装配错误被 blanket catch 吞掉。
+The colleague note at the top of the fixture ("wrap every remote call in try/catch and
+retry whenever a RemoteError occurs") is deliberately wrong: ok:false never enters
+catch; `instanceof RemoteError` misses across bundles/workers/realms; the bare legacy
+codes `cancelled` / `session-not-found` became `gateway/cancelled` /
+`session/not-found` in alpha.2; cancellation and internal/unknown codes get retried
+indiscriminately; assembly errors are swallowed by the blanket catch.
 
-## 判分结构
+## Grading structure
 
-judge 按六个规范 section 分区判分（Root Cause 20 / Problems 10 / Corrected
-Implementation 20 / Error Code Migration 20 / Retry Policy 15 / Error Boundary
-15），Corrected Implementation 只认 fenced 代码块，方向感知检测 + 四条 cap
-（throw-centric 主张 cap 30；修复代码仍用旧裸码 / blanket retry / instanceof
-cap 60；全文无 result.ok cap 60）。旧代码引用只允许行内写法，fenced 块会被
-当作 agent 的修复提案——诚实引用旧码不触发封顶（见负控 H）。
+The judge parses the six canonical sections and grades each section's own text
+(Root Cause 20 / Problems 10 / Corrected Implementation 20 / Error Code Migration 20 /
+Retry Policy 15 / Error Boundary 15). The Corrected Implementation is graded from its
+fenced code block only. Direction-aware detection plus four hard caps: a
+throw-centric claim caps at 30; a repair that still uses bare legacy codes, blanket
+retry, or instanceof caps at 60; a report that never mentions result.ok caps at 60.
+Legacy code may only be quoted inline — a fenced block is graded as the agent's own
+proposed fix, so honest inline quoting never triggers a cap (see control H).
 
-## 边界
+## Boundaries
 
-- 只读题：fixture 零改动（改 fixture 直接 0 分）；不装 dsh、不做运行时验证；
-- 报告不要求引用卡号；卡片引用只出现在题面与 README 供 with-skill 轮参考。
+- Read-only task: the fixture must stay unchanged (modifying it scores 0 directly);
+  dsh is not installed and no runtime verification is performed;
+- The report does not need to cite card IDs; card references appear only in the task
+  prompt and README for the with-skill round to consult.
