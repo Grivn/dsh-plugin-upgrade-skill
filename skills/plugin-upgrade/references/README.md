@@ -11,9 +11,9 @@ alpha.1 删除、alpha.2 恢复时，不应先删再加。
 | 顺序 | 卡片文件 | from | to | 卡数 | 状态 / 覆盖 |
 |---|---|---|---|---:|---|
 | 1 | [v0.1.1-rc.2.md](v0.1.1-rc.2.md) | `dsh-v0.1.1-rc.1` | `dsh-v0.1.1-rc.2` | 3 | reviewed / curated |
-| 2 | [v0.1.2-alpha.1.md](v0.1.2-alpha.1.md) | `dsh-v0.1.1-rc.2` | `dsh-v0.1.2-alpha.1` | 20 | reviewed / curated |
-| 3 | [v0.1.2-alpha.2.md](v0.1.2-alpha.2.md) | `dsh-v0.1.2-alpha.1` | `dsh-v0.1.2-alpha.2` | 7 | reviewed / curated |
-| — | [rollup-0.1.2.md](rollup-0.1.2.md) | `dsh-v0.1.1-rc.2` → `dsh-v0.1.2-alpha.2` 全走廊 | rollup | 非卡片文件：走廊层增量（跨 cohort 共存、未发布 cohort 安装、`RemoteResult` 错误流、迁移前 baseline 归因、boot race 有界重试、base-only preset 前置、类型面导出漂移、宿主自身安全边界、分层验证清单）；基于 alpha.2，正式版需复核 |
+| 2 | [v0.1.2-alpha.1.md](v0.1.2-alpha.1.md) | `dsh-v0.1.1-rc.2` | `dsh-v0.1.2-alpha.1` | 27 | reviewed / curated |
+| 3 | [v0.1.2-alpha.2.md](v0.1.2-alpha.2.md) | `dsh-v0.1.2-alpha.1` | `dsh-v0.1.2-alpha.2` | 8 | reviewed / curated |
+| — | [rollup-0.1.2.md](rollup-0.1.2.md) | `dsh-v0.1.1-rc.2` → `dsh-v0.1.2-alpha.2` 全走廊 | rollup | 非卡片文件：走廊层增量（跨 cohort 共存、未发布 cohort 安装、`RemoteResult` 错误流、迁移前 baseline 归因、boot race 有界重试、base-only preset 前置、类型面导出漂移、宿主自身安全边界、安装通道三坑、分层验证清单）；基于 alpha.2，正式版需复核 |
 
 `curated` 表示只收录已识别的插件相关变化，不表示完整 API diff。走廊缺边时停止
 自动迁移，向用户报告缺口；为当前任务做临时上游调研与给本仓库补卡是两件事，后者
@@ -26,6 +26,7 @@ alpha.1 删除、alpha.2 恢复时，不应先删再加。
 - [api-migration-0.1.2-alpha.2.md](api-migration-0.1.2-alpha.2.md)：rc.2→alpha.2 命中 API、Remote、Settings、事件、Headless、打包或 composition 接口时使用的精确迁移 ledger；
 - [host-plane-probes.md](host-plane-probes.md)：宿主平面在 `cordis.patch.yml` 里做双 cohort 探测的三种写法；
 - [migration-hygiene.md](migration-hygiene.md)：与版本无关的工具链坑（tsbuildinfo 假阳性、oxc 解析严格性、生效平面、pnpm 拦截、测试语法）；
+- [troubleshooting.md](troubleshooting.md)：迁移后症状 → 根因 → 卡片反查；
 - [examples/legacy-plugin/](../examples/legacy-plugin/)：七类触点静态夹具。
 
 ## 卡片文件元数据
