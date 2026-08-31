@@ -112,6 +112,10 @@ cp -r dsh-plugin-upgrade-skill/skills/* .cursor/skills/
 | [plugin-test](skills/plugin-test/) | 为 DSH 插件变更选择最小充分测试层级，覆盖单元测试、覆盖率、真实 API、快照、Web 及真实发布入口 | 跨版本验证 |
 | [plugin-release](skills/plugin-release/) | 打包、发布与分发 DSH 插件：发布轨选择、未发布 cohort 安装、CI 门禁与回滚 | 跨版本 |
 
+## 版本兼容审计（dsh-upgrade-audit）
+
+[dsh-upgrade-audit](skills/dsh-upgrade-audit/) 审计两个 DSH 版本间的外部兼容性与回滚，产出 UPGRADE-ADAPTATION 报告 + 边界签名表，为版本卡片提供证据。案例：[0.1.2-alpha.1 → alpha.2](skills/dsh-upgrade-audit/examples/0.1.2alpha1-to-0.1.2alpha2/UPGRADE-ADAPTATION.md)。
+
 ## 版本数据现状
 
 | 版本区间 | 状态 | 卡片文件 | 说明 |
