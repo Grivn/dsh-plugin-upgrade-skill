@@ -1,0 +1,11 @@
+{
+  "name": "@demo/dsh-bench-catalog",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf lib",
+    "typecheck": "tsc --noEmit",
+    "build": "node scripts/build.mjs"
+  }
+}
