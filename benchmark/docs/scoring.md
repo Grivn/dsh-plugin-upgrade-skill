@@ -1,6 +1,6 @@
 # Scoring rules and checkpoint mapping
 
-Total 800 (8 tasks × 100; the Harbor reward is 0–1, normalized as score/100).
+Total 900 (9 tasks × 100; the Harbor reward is 0–1, normalized as score/100).
 Every judge: exit 0, with the last stdout line
 `{"score": 0-100, "max": 100, "reasons": [...]}`; `tests/test.sh` parses that last
 line as JSON and writes score/100 to `/logs/verifier/reward.txt`.
@@ -17,12 +17,14 @@ line as JSON and writes score/100 to `/logs/verifier/reward.txt`.
 | H1-plane-trap | DSH-0.1.2-A1-01 field note "determine the plane before choosing the injection name"; validation report section 4 (wrongly switching to remote → `pending (waiting for service: remote)`) | Same bands as M1; plus a static gate: inject contains remote but not llm → capped at 20 (the comment trap) |
 | H2-baseline-trap | rollup R-06 pre-migration baseline attribution | Report contains baseline/pre-existing/exemption attribution, kept separate from the migration (60) + container activation (40) − quietly fixing the pre-existing test file (30, floor 0); fixture untouched: 0 |
 | H3-client-plane | DSH-0.1.2-A1-01 client-plane contract (package.json must declare `dsh.client`); DSH-0.1.2-A1-19 acceptance anchor; DSH-0.1.2-A2-02 RemoteResult (inside the solution) | `dsh.client` declared completely (platform=web, 40) + add succeeded (10) + host-side startup without pending (10) + `__DSH_BOOT__.entries` actually contains this plugin (40); fixture untouched: 0. Note: `dsh.client` without platform is a **loud failure** (boot fails immediately with `dsh.client.platform must be a string`), and that form caps at 30; only the completely missing declaration (the trap's original state) is silent |
+| H5-runtime-export-drift | DSH-0.1.2-A2-10 `dsh-settings` removes the runtime `settingsNamespace` export; rollup R-11 type-surface export drift; API-03 provider-owned lifecycle | The judge installs via **pack → tarball → add** only (a link install masks the drift, so it is disabled): pack/add/boot all green with no static issues → 100; add succeeded but the real boot failed (named export / plugin tree failed / pending) → 40; pack or add failed → 30; fixture untouched → 0; old-runtime pin (an old `@deepseek-ai/dsh-settings` pulled into runtime through any of dependencies/optionalDependencies/peerDependencies/overrides/pnpm.overrides) or a hand-rolled settingsNamespace shim → **capped at 20 even when the boot is green**; boot green but the migration is incomplete (still imports settingsNamespace, or the devDeps cohort is not aligned to alpha.2) → **capped at 60**; host downgraded/tampered (dsh version, global dsh-settings export surface) → 0 |
 
 ## Liveness signals (shared convention for container tasks)
 
 | Signal | Meaning |
 |---|---|
 | `pending (waiting for service: …)` / `plugin tree failed` / `did not activate` | plugin tree not activated → failure band (40) |
+| named-export failure (`does not provide an export named …`) | ESM runtime export drift → failure band (40; the main H5 symptom) |
 | headless cold boot shows `MISSING_CREDENTIAL` (no API key in the container) | startup reached the host application layer → plugin tree activated as a whole, pass |
 | after a web cold boot the page boot manifest contains `<plugin>/client.js` | real browser-roster recognition (H3 only) |
 
@@ -36,9 +38,11 @@ code" checkpoint (the attribution principle from the validation report).
   runtime; "browser plane pass" means the host-advertised `__DSH_BOOT__` boot manifest
   contains this plugin's entry. The runtime behavior of the `RemoteResult`
   error-flow branch is not covered.
-- M1/H1/H2: only "activation + service call reachable" is verified; no full round of
+- M1/H1/H2/H5: only "activation + service call reachable" is verified; no full round of
   real conversation is run (no API key); a route count of 0 is expected and not a
-  failure.
+  failure. H5 additionally installs only via the pack → tarball → add path (a link
+  install carries the fixture's own node_modules along and masks the runtime drift);
+  settings namespace registration reads/writes do not do a settings-panel round trip.
 - Container-task judges only create the `bench-*` profile and the `/tmp/bench-*`
   directories and clean them up when the run ends; nothing else in the environment is
   touched.
