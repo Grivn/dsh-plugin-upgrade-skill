@@ -1,16 +1,16 @@
-# 示例 01：简单客户端插件
+# Example 01: Simple Client Plugin
 
-简体中文 | [English](01-simple-client-plugin.en.md)
+English | [简体中文](01-simple-client-plugin.md)
 
-**场景**: 一个纯客户端 UI 插件，只用了 `dsh-client-runtime` 获取 settings。
+**Scenario**: A pure client-side UI plugin that only uses `dsh-client-runtime` to read settings.
 
-**影响触点**: #3 内部服务探测（客户端导入）
+**Touchpoints**: #3 internal service probing (client imports)
 
-**复杂度**: ⭐
+**Complexity**: ⭐
 
 ---
 
-## 升级前
+## Before
 
 ```typescript
 // src/index.ts
@@ -39,7 +39,7 @@ export function MyPlugin(ctx: ClientContext) {
 
 ---
 
-## 升级后
+## After
 
 ```typescript
 // src/index.ts
@@ -71,21 +71,21 @@ export function MyPlugin(ctx: ClientContext) {
 
 ---
 
-## 迁移步骤
+## Migration Steps
 
-1. **更新导入**:
+1. **Update imports**:
    ```sh
-   # 全局替换
+   # replace globally
    sed -i "s/@deepseek-ai\/dsh-client-runtime\/client/@deepseek-ai\/dsh-client-ui-settings\/client/g" src/**/*.ts
    ```
 
-2. **添加类型别名**:
+2. **Add a type alias**:
    ```typescript
    import type { Context } from '@deepseek-ai/cordis'
    type ClientContext = Context
    ```
 
-3. **更新 package.json**:
+3. **Update package.json**:
    ```sh
    pnpm remove @deepseek-ai/dsh-client-runtime
    pnpm add @deepseek-ai/dsh-client-ui-settings@^0.1.2
@@ -93,53 +93,53 @@ export function MyPlugin(ctx: ClientContext) {
 
 ---
 
-## 验证
+## Verification
 
 ```sh
-# 1. 检查无残留引用
+# 1. check for leftover references
 grep -r "dsh-client-runtime" src/
-# 预期：无输出
+# expected: no output
 
-# 2. 类型检查
+# 2. typecheck
 pnpm run typecheck
-# 预期：无类型错误
+# expected: no type errors
 
-# 3. 构建
+# 3. build
 pnpm run build
-# 预期：构建成功
+# expected: build succeeds
 
-# 4. 启动测试
+# 4. start the test
 pnpm dsh --profile test
-# 预期：插件正常加载，settings 可访问
+# expected: plugin loads normally and settings are accessible
 ```
 
 ---
 
-## 常见错误
+## Common Errors
 
-### 错误 1: `Module not found: @deepseek-ai/dsh-client-runtime/client`
+### Error 1: `Module not found: @deepseek-ai/dsh-client-runtime/client`
 
-**原因**: 未更新所有导入路径。
+**Cause**: Not all import paths were updated.
 
-**解决**:
+**Fix**:
 ```sh
-# 查找所有引用
+# find all references
 grep -r "dsh-client-runtime" .
-# 逐个替换
+# replace one by one
 ```
 
-### 错误 2: `Type 'Context' is not assignable to type 'ClientContext'`
+### Error 2: `Type 'Context' is not assignable to type 'ClientContext'`
 
-**原因**: 忘记添加类型别名。
+**Cause**: The type alias was forgotten.
 
-**解决**:
+**Fix**:
 ```typescript
 import type { Context } from '@deepseek-ai/cordis'
 type ClientContext = Context
 ```
 
-### 错误 3: `useSettings is not a function`
+### Error 3: `useSettings is not a function`
 
-**原因**: 导入路径错误。
+**Cause**: Wrong import path.
 
-**解决**: 确保从 `@deepseek-ai/dsh-client-ui-settings/client` 导入，不是 `/server`。
+**Fix**: Make sure to import from `@deepseek-ai/dsh-client-ui-settings/client`, not `/server`.
