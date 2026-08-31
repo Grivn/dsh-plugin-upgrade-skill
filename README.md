@@ -145,7 +145,7 @@ Claude Code 中按名字调用 skill（插件安装后带命名空间）：
 skills/<skill-name>/
 ├── SKILL.md        # skill 的说明书（怎么触发、怎么干活）
 ├── references/     # 升级说明卡和详细资料
-├── scripts/        # 可执行的小工具
+├── scripts/        # 可执行的小工具（plugin-upgrade 内含只读迁移规划器和运行时验证器）
 └── examples/       # 示例代码（只读，不要运行）
 scripts/validate.mjs            # 仓库自检
 scripts/validate-manifests.mjs  # 多 agent 清单自检

@@ -140,7 +140,7 @@ Keep `SKILL.md` and the `references/` folder inside — don't copy just one file
 skills/<skill-name>/
 ├── SKILL.md        # how the skill triggers and what it does
 ├── references/     # upgrade cards and detailed material
-├── scripts/        # small executable tools
+├── scripts/        # small executable tools (plugin-upgrade ships a read-only migration planner and a runtime verifier)
 └── examples/       # example code (read-only, do not run)
 scripts/validate.mjs            # repo self-check
 scripts/validate-manifests.mjs  # multi-agent manifest self-check

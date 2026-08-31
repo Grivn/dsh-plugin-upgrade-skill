@@ -1,8 +1,12 @@
-# Read-only migration planner
+# Tools in this directory
 
-`plan-migration.mjs` turns the existing pre-flight patterns and version-card metadata into a deterministic first-pass plan. It never writes the target repository and has no output-file option.
+Two executables live here, with very different safety postures — read the
+verifier's note before running it on anything you do not trust:
 
-It lives inside `skills/plugin-upgrade/` so that installers that copy only the skill directory (`npx skills add`, `gemini skills install --path skills`, Cursor) ship it together with the cards it reads.
+- **`plan-migration.mjs` — read-only migration planner.** Turns the existing pre-flight patterns and version-card metadata into a deterministic first-pass plan. It never writes the target repository and has no output-file option.
+- **`verify-runtime.mjs` — runtime verifier (NOT read-only).** Installs the plugin into an isolated temp profile and cold-boots it with a dead model endpoint to verify activation end-to-end, reporting failure attribution. It really installs and runs plugin code (including npm/git lifecycle scripts) with the caller's permissions — it is NOT a sandbox; run it inside a throwaway Docker container when verifying third-party plugins you do not fully trust. POSIX only. Self-check: `verify-runtime.check.mjs` (wired into `npm test`).
+
+Both live inside `skills/plugin-upgrade/` so that installers that copy only the skill directory (`npx skills add`, `gemini skills install --path skills`, Cursor) ship them together with the cards they read.
 
 ## Usage
 

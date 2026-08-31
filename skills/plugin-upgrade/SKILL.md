@@ -72,7 +72,7 @@ Validate at least the applicable layers:
 1. Dependency resolution: the package manager, lockfile, and dependency graph change only as expected; scan the full lockfile for the old DSH cohort and removed packages, not only top-level dependencies;
 2. Enablement resolution: the target profile's composition points to the expected package identity, with no old source or duplicate rows;
 3. Static: build, typecheck, and plugin tests;
-4. Runtime: cold-start a real DSH profile; verify entry activation and that required/provided Cordis services do not remain pending. For a Web Client plugin, exchange the printed token URL for its cookie, read the host boot manifest, request the advertised client artifact, and prove registration/mount rather than accepting a bare HTTP 200;
+4. Runtime: cold-start a real DSH profile; verify entry activation and that required/provided Cordis services do not remain pending — [verify-runtime.mjs](scripts/verify-runtime.mjs) runs this layer end-to-end in an isolated profile and reports failure attribution (plugin-code / dependency-resolution / profile-config / dsh-runtime). For a Web Client plugin, exchange the printed token URL for its cookie, read the host boot manifest, request the advertised client artifact, and prove registration/mount rather than accepting a bare HTTP 200;
 5. Behavior: execute one core plugin path; host migrations must complete at least one message → tool → response flow, or an equivalent dedicated flow;
 6. Wrapper: verify exit code, stdout, stderr, cancellation, and teardown.
 

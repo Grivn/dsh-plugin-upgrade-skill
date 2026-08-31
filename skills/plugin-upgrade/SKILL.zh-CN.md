@@ -99,7 +99,7 @@
 2. 启用解析：目标 profile 的 composition 指向预期包身份，且无旧来源或重复 row；
 3. 静态：build、typecheck、插件测试；
 4. 运行时：真实 DSH profile 冷启动、entry activate、依赖/提供的 Cordis service 不停在
-   pending；Web Client 插件还要用打印出的 token URL 换 Cookie，读取宿主 boot manifest，
+   pending——[verify-runtime.mjs](scripts/verify-runtime.mjs) 在隔离 profile 里端到端执行该层并输出失败归因（plugin-code / dependency-resolution / profile-config / dsh-runtime）；Web Client 插件还要用打印出的 token URL 换 Cookie，读取宿主 boot manifest，
    请求宿主公告的客户端产物并证明注册/挂载，不能把裸 HTTP 200 当完成；
 5. 行为：执行一条插件核心路径；宿主迁移至少完成一次消息→工具→回复，或等价专用流程；
 6. 包装器：核对退出码、stdout、stderr、取消与 teardown。
