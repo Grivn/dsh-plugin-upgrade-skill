@@ -42,6 +42,19 @@ node benchmark/run.mjs --task M1-host-migration --agent-output benchmark/agent-o
 # 判分结果：控制台表格 + benchmark/scorecard.json
 ```
 
+### 先验证考题和标准答案
+
+评 agent 之前，维护者可先运行仓库自带的精确版本验收：
+
+```sh
+npm run test:dsh
+```
+
+它会在临时 Docker 容器中自动安装固定版本，并验证 M1 的完整红绿链：旧实现
+在 `0.1.1-rc.2` 可用、在 `0.1.2-alpha.2` 因缺少 `apiProxy` 失败、M1 标准答案
+在 `0.1.2-alpha.2` 真实调用 `llm` 服务成功。它不读取或修改本机 `~/.dsh`，也不要求
+预先准备 `dsh-verify` 容器；定义见 [`runtime/cases.json`](runtime/cases.json)。
+
 ## 怎么给 agent 用（评测协议）
 
 1. **给 agent 的输入**：`benchmark/tasks/<题号>/task.md` 就是用户对 agent 说的话，

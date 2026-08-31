@@ -38,3 +38,5 @@ build/
 # Benchmark runtime artifacts
 benchmark/agent-output/
 benchmark/scorecard.json
+.artifacts/
+.dsh-plugin-smoke-run-*/

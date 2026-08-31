@@ -3,12 +3,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "npm run validate",
+    "test": "npm run validate && npm run test:release && npm run test:audit && npm run test:dsh:cases",
     "validate": "node scripts/validate.mjs && node scripts/validate-manifests.mjs && npm run test:smoke",
     "validate:skills": "node scripts/validate.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
     "validate:naming": "node skills/plugin-write/scripts/validate-names.check.mjs",
     "validate:registry": "node skills/plugin-write/scripts/query-registry.check.mjs",
-    "test:smoke": "node --test skills/plugin-test/scripts/docker-release-smoke.test.mjs"
+    "test:smoke": "node --test skills/plugin-test/scripts/docker-release-smoke.test.mjs",
+    "test:release": "node --test skills/plugin-release/scripts/verify-release.test.mjs",
+    "test:audit": "node skills/dsh-upgrade-audit/scripts/gen-artifacts.check.mjs",
+    "test:dsh:cases": "node benchmark/runtime/verify.mjs --check",
+    "test:dsh": "node benchmark/runtime/verify.mjs --all"
   }
 }

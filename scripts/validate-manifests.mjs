@@ -98,7 +98,10 @@ const validateScript = rootPackage?.scripts?.validate ?? ''
 if (!validateScript.includes('scripts/validate.mjs') || !validateScript.includes('scripts/validate-manifests.mjs')) {
   fail('package.json scripts.validate 必须串联两个 validator')
 }
-if (rootPackage?.scripts?.test !== 'npm run validate') fail('package.json scripts.test 必须委托 npm run validate')
+const testScript = rootPackage?.scripts?.test ?? ''
+if (!/^npm run validate(?:\s*&&|\s*$)/.test(testScript)) {
+  fail('package.json scripts.test 必须先委托 npm run validate')
+}
 
 if (errors.length > 0) {
   console.error('清单校验失败：')
