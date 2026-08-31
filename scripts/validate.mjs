@@ -78,7 +78,7 @@ for (const file of markdownFiles) {
 
 // Slash commands are thin delegates; copied workflows drift independently from SKILL.md.
 const commandFiles = [
-  join(root, '.claude', 'commands', 'dsh-upgrade.md'),
+  join(root, 'commands', 'dsh-upgrade.md'),
   join(root, '.gemini', 'commands', 'dsh-upgrade.toml'),
 ]
 for (const file of commandFiles) {

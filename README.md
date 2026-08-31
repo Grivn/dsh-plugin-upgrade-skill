@@ -81,12 +81,13 @@ cp -r dsh-plugin-upgrade-skill/skills/* .cursor/skills/
 
 ## 使用
 
-### 斜杠命令（Claude / Gemini）
+### 斜杠命令
 
-安装后可使用 `/dsh-upgrade` 命令：
+安装后，Claude Code 用插件命名空间调用，Gemini CLI 用命令名：
 
-```bash
-/dsh-upgrade 0.1.2
+```
+/dsh-plugin-upgrade-skill:dsh-upgrade 0.1.2   # Claude Code
+/dsh-upgrade 0.1.2                            # Gemini CLI
 ```
 
 或直接在对话中提问：
