@@ -1,6 +1,6 @@
 # Scoring rules and checkpoint mapping
 
-Total 2600 (26 tasks × 100; the Harbor reward is 0–1, normalized as score/100).
+Total 2700 (27 tasks × 100; the Harbor reward is 0–1, normalized as score/100).
 Every judge: exit 0, with the last stdout line
 `{"score": 0-100, "max": 100, "reasons": [...]}`; `tests/test.sh` parses that last
 line as JSON and writes score/100 to `/logs/verifier/reward.txt`.
@@ -23,6 +23,7 @@ line as JSON and writes score/100 to `/logs/verifier/reward.txt`.
 | H9-dsh-web-alpha2 | dsh-web [v0.3.8](https://github.com/zhu1090093659/dsh-web/tree/v0.3.8) → [v0.3.9](https://github.com/zhu1090093659/dsh-web/tree/v0.3.9); DSH-0.1.2-A2-02 / A2-03 / A2-10 | Static 100: migrate 13 settings consumers (39) + web-settings bridge (6) + peer/direct dependencies and git-graph session edge (15) + npm cohort/lockfile/workflows (10) + aggregate exclusions (15) + task-board qualified error code (10) + upstream script regressions (5). At 80+, the judge performs a full workspace install/build, installs the 17-family local tarballs through the official CLI, cold-boots dsh 0.1.2-alpha.2 Web, and checks the boot manifest; runtime failure caps at 80 and non-target edits cap at 90 |
 | H10-browser-activation-trap | DSH-0.1.2-A1-26 client registration id must equal package name; DSH-0.1.2-A1-19 browser acceptance anchor | fixture changed (else 0) + `dsh plugin add` (10) + boot manifest entry (15) + bundle HTTP 200 from the browser (15) + Chromium observes the fixture-owned activation marker with no package activation failure (60). The unchanged trap earns 40: discovery and delivery pass, execution does not |
 | H13-ghost-host-trap | pre-flight step 1.5 ghost host (pin `from` to the running process); DSH-0.1.2-A1-08 Web/API auth generations (unauthenticated probe fork); rollup R-12 the upgrade target may be the currently running host | preflight.json parsed against the box: hostWireGeneration=pre-0.1.2 (40) + processMatchesDisk=false (20) + migrationFrom pins the old generation (15) + probe-grade evidence (10) + diskDshVersion=0.1.2-alpha.2 and hostPort matches the provisioned port (5) + host untouched under judge re-probe (10). Trusting the disk (claims 0.1.2+/matches) → capped at 20; provision never ran, no parsable report, or tracked files under /app/ops modified (git-checked) → 0 |
+| H11-dual-cohort-rpc | DSH-0.1.2-A1-08 dsh-mnemon field note; Example 04 dual-cohort call-superset rule; real rc.2/alpha.2 Connection implementations | fixture changed (else 0) + candidate API imports (10) + updated mock regression passes (10) + both rc.2 configs register four routes through the real service (20) + both newer-cohort configs do the same (20) + exact read-only/trusted-host authority vectors in both cohorts (15 each) + no version/arity/source-text/exception-retry branch (10) |
 | S4-legacy-client-imports | DSH-0.1.2-A1-25 client-runtime package removal; DSH-0.1.2-A1-26 register-id-must-equal-package-name; DSH-0.1.2-A1-27 session content reads; DSH-0.1.2-A1-30 `ctx.connection.api` removal | Expected card set {A1-25, A1-26, A1-27, A1-30}: 25 per card; claiming A1-25 is "type-only and therefore harmless" treats it as missed; fabricated deterministic "cards" (apply-lifecycle replacement, inject-moved-to-manifest) cap at 70; fixture modified → flat 0 |
 | S5-negative-naming | plugin-write naming profile (official short names valid, warnings ≠ errors); registry-check four states | Four verdicts, 25 each: `greet` is a valid official short name (no compatibility error), unprefixed service `search` is a recommendation/warning, events are shared channels (informational), unqueried registry = unknown; asserting "reserved/globally available" scores 0 for that item; claiming "everything passes" caps at 30; fixture modified → flat 0 |
 | H6-remote-error-trap | DSH-0.1.2-A2-02 error-flow vocabulary; DSH-0.1.2-A1-30 field note (silent swallow) | Four points, 25 each: namespaced codes `gateway/cancelled` + `gateway/internal` (half credit 12 for "namespaced but exact spelling unconfirmed"), cancel terminates/propagates without retry, internal/unknown reported without blind retry, silent swallow removed; following the comment (keep old codes) caps at 25; recommending cross-realm `instanceof RemoteError` caps at 50; fixture modified → flat 0 |
@@ -76,6 +77,11 @@ code" checkpoint (the attribution principle from the validation report).
   are excluded. Its verifier checks 66 v0.3.9 target files, runs the upstream script
   regressions, and forces all 17 `@linxin666/*` family dependencies to candidate local
   tarballs rather than substituting npm's published v0.3.9.
+- H11-dual-cohort-rpc proves only the four-channel Host registration seam. The rc.2
+  and alpha.2 package closures are independently locked; alpha.2 substitutes for the
+  unpublished alpha.1 executable only because the fixed source has the same
+  two-argument registration behavior. No product browser, token exchange, Provider
+  credential, or bit-identical packed mnemon artifact is scored.
 - Container-task judges only create the `bench-*` profile and the `/tmp/bench-*`
   directories and clean them up when the run ends; nothing else in the environment is
   touched.

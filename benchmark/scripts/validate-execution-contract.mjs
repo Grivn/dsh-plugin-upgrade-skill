@@ -1,10 +1,15 @@
 import { readFile, readdir } from 'node:fs/promises'
+import { execFile, spawn } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { promisify } from 'node:util'
 
 const benchmarkRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const repoRoot = resolve(benchmarkRoot, '..')
 const tasksRoot = join(benchmarkRoot, 'tasks')
 const failures = []
+const execFileAsync = promisify(execFile)
 
 const expectedModes = new Map([
   ['S1-static-scan', 'readonly'],
@@ -21,6 +26,7 @@ const expectedModes = new Map([
   ['H9-dsh-web-alpha2', 'mutable'],
   ['H10-browser-activation-trap', 'mutable'],
   ['H13-ghost-host-trap', 'readonly'],
+  ['H11-dual-cohort-rpc', 'mutable'],
   ['H6-remote-error-trap', 'readonly'],
   ['S4-legacy-client-imports', 'readonly'],
   ['S5-negative-naming', 'readonly'],
@@ -174,6 +180,91 @@ for (const [taskId, mode] of expectedModes) {
       fail(taskRoot, `cannot read H9 closed-book controls: ${error.message}`)
     }
   }
+
+  if (taskId === 'H11-dual-cohort-rpc') {
+    const snapshot = '232b00a2331a397789f7d61c57067e73d12fdac0'
+    const snapshotTree = 'f24c0e2cb81428d36456b64b4f613bd2c38e953b'
+    const snapshotArchive = '4c404334df82f066a9f909395586ef2cde3eaebfcdca800fd56dd539f7d3abff'
+    const agentBlock = taskToml.match(/\[agent\]([\s\S]*?)(?=\n\[|$)/)?.[1] ?? ''
+    for (const [pattern, label] of [
+      [new RegExp(`^skill_snapshot_commit = "${snapshot}"$`, 'm'), 'fixed pre-answer skill snapshot'],
+      [new RegExp(`^skill_snapshot_tree = "${snapshotTree}"$`, 'm'), 'fixed skill tree'],
+      [new RegExp(`^skill_snapshot_archive_sha256 = "${snapshotArchive}"$`, 'm'), 'fixed skill archive hash'],
+      [/^evaluation_partition = "closed-book-transfer"$/m, 'closed-book transfer partition'],
+      [/^skill_snapshot_path = "skills\/plugin-upgrade"$/m, 'skill snapshot path'],
+    ]) {
+      if (!pattern.test(taskToml)) fail(taskFile, `H11 missing contamination control: ${label}`)
+    }
+    if (!/^network_mode = "no-network"$/m.test(agentBlock)) {
+      fail(taskFile, 'H11 agent must run with no network')
+    }
+    if (!/不得使用服务端网页搜索|Do not use provider-side web search/i.test(normalized)) {
+      fail(instructionFile, 'H11 must explicitly prohibit provider-side web search')
+    }
+
+    const dockerfile = join(taskRoot, 'environment', 'Dockerfile')
+    const provenanceFile = join(taskRoot, 'provenance', 'README.md')
+    try {
+      const [dockerfileText, provenance] = await Promise.all([
+        readFile(dockerfile, 'utf8'),
+        readFile(provenanceFile, 'utf8'),
+      ])
+      for (const [pattern, label] of [
+        [/COPY cohorts\/rc2 \/opt\/dsh-cohorts\/rc2/, 'locked rc.2 cohort'],
+        [/COPY cohorts\/alpha2 \/opt\/dsh-cohorts\/alpha2/, 'locked newer cohort'],
+        [/--frozen-lockfile --ignore-scripts/, 'frozen cohort install'],
+      ]) {
+        if (!pattern.test(dockerfileText)) fail(dockerfile, `H11 missing real-cohort control: ${label}`)
+      }
+      if (!provenance.includes(snapshot) || !/current tree would therefore measure answer retrieval/i.test(provenance)) {
+        fail(provenanceFile, 'H11 provenance must explain why the current answer-bearing skill is invalid')
+      }
+      if (!provenance.includes(snapshotTree) || !provenance.includes(snapshotArchive)) {
+        fail(provenanceFile, 'H11 provenance must record the evaluated skill tree and archive hashes')
+      }
+    } catch (error) {
+      fail(taskRoot, `cannot read H11 closed-book controls: ${error.message}`)
+    }
+
+    try {
+      await execFileAsync('git', ['cat-file', '-e', `${snapshot}:skills/plugin-upgrade/SKILL.md`], { cwd: repoRoot })
+    } catch {
+      fail(taskFile, `H11 skill snapshot does not contain skills/plugin-upgrade/SKILL.md: ${snapshot}`)
+    }
+    try {
+      const { stdout } = await execFileAsync('git', ['rev-parse', `${snapshot}:skills/plugin-upgrade`], { cwd: repoRoot })
+      if (stdout.trim() !== snapshotTree) fail(taskFile, `H11 skill snapshot tree mismatch: ${stdout.trim()}`)
+    } catch (error) {
+      fail(taskFile, `cannot resolve H11 skill snapshot tree: ${error.message}`)
+    }
+    try {
+      const digest = await archiveDigest(snapshot, 'skills/plugin-upgrade', repoRoot)
+      if (digest !== snapshotArchive) fail(taskFile, `H11 skill archive hash mismatch: ${digest}`)
+    } catch (error) {
+      fail(taskFile, `cannot hash H11 skill snapshot archive: ${error.message}`)
+    }
+    try {
+      await execFileAsync('git', ['cat-file', '-e', `${snapshot}:skills/plugin-upgrade/examples/04-dual-cohort-plugin.md`], { cwd: repoRoot })
+      fail(taskFile, 'H11 skill snapshot already contains the answer-bearing Example 04')
+    } catch {
+      // Expected: the answer-bearing example must not exist in the evaluated snapshot.
+    }
+  }
+}
+
+function archiveDigest(commit, path, cwd) {
+  return new Promise((resolvePromise, reject) => {
+    const hash = createHash('sha256')
+    let stderr = ''
+    const child = spawn('git', ['archive', commit, path], { cwd })
+    child.stdout.on('data', (chunk) => hash.update(chunk))
+    child.stderr.on('data', (chunk) => { stderr += chunk })
+    child.on('error', reject)
+    child.on('close', (code) => {
+      if (code === 0) resolvePromise(hash.digest('hex'))
+      else reject(new Error(stderr.trim() || `git archive exited ${code}`))
+    })
+  })
 }
 
 if (failures.length) {

@@ -1,4 +1,4 @@
-# dsh plugin upgrade tasks (benchmark v2.3 · Harbor format)
+# dsh plugin upgrade tasks (benchmark v2.4 · Harbor format)
 
 The 26 plugin-upgrade tasks measure one thing: **once an AI has our upgrade skill
 installed, will it actually upgrade the plugin**. The first 12 are written exams (read
@@ -33,6 +33,7 @@ honestly instead of quietly fixing it and pretending nothing happened).
 | H9-dsh-web-alpha2 | Hands-on | Can it migrate the real dsh-web v0.3.8 source slice to v0.3.9 on alpha.2, covering all 13 settings consumers, the dependency cohort, aggregate entrypoints, workflow, and retry protocol |
 | H10-browser-activation-trap | Hands-on | A renamed Web plugin appears in the browser boot manifest and its bundle returns 200, but the client entry never activates: does it repair the registration identity and prove execution in Chromium |
 | H13-ghost-host-trap | Hands-on | The disk says dsh 0.1.2-alpha.2 but the web host has been running since before the in-place upgrade and still answers the pre-0.1.2 wire: does the pre-flight pin the migration FROM to the running process's real generation (probe + start-time, host left untouched) instead of trusting the version on disk |
+| H11-dual-cohort-rpc | Hands-on | An alpha-style two-argument RPC registration passes its mocks and the newer real Host but crashes on rc.2: can it find one branch-free call shape that preserves the legacy per-channel authority policy in both real cohorts |
 | S4-legacy-client-imports | Static | A 0.1.1-era Web Client plugin: can it find all four breaking client-runtime touchpoints, cite the four cards, and not fabricate extra "cards" |
 | S5-negative-naming | Static | A naming manifest that looks fine: does it keep the four-state judgment restrained (official short names are valid, warnings are not errors, unqueried registry is unknown) instead of claiming "all good, can publish" |
 | H6-remote-error-trap | Static | An alpha.2 plugin still on 0.1.1 error handling with a comment saying "do not change the error codes": does it migrate the error flow (namespaced codes, cancel propagation, no blind retry, no silent swallow) by evidence instead of the comment |
@@ -57,7 +58,8 @@ supplied by Harbor, although native Codex skills remained available in the
 latter condition. These rows belong to the same benchmark family but are not a
 direct model comparison: `S8-release-routing-trap`, `M5-token-auth-smoke`, and
 `H8-fire-drill` were added after the Luna snapshot, while
-`H10-browser-activation-trap` was added after the Terra runs.
+`H10-browser-activation-trap` was added after the Terra runs, and
+`H11-dual-cohort-rpc` is added by this PR.
 
 | Model | Skill condition | Scope | reward | mean | perfect tasks | Summed job duration | Tokens (input / cache / output) | Cost | Detailed report |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|
@@ -259,6 +261,13 @@ needed between rounds. `BENCHMARK-AUTH-v1` is identical in both rounds: it only
 removes the false zeros caused by the missing confirmation round in an unattended
 environment, and it does not leak migration answers to either round.
 
+Tasks carrying `metadata.skill_snapshot_commit` are an exception to attaching the
+current skill tree. Their provenance document identifies the exact pre-answer skill
+snapshot that must be materialized for the with-skill condition. In particular, H11
+must use `232b00a2331a397789f7d61c57067e73d12fdac0`: the current Example 04 contains
+its answer and would turn a transfer test into retrieval. No-skill and generic-skill
+runs keep the same task image and prompt.
+
 ## Grading design notes
 
 - **Real activation counts**: for hands-on tasks the judge installs the agent's
@@ -274,6 +283,9 @@ environment, and it does not leak migration answers to either round.
   parse the JSON it falls back to a 0 score.
 - **Browser execution where required**: H10 includes Chromium and requires a DOM
   activation marker; a boot-manifest entry or HTTP 200 alone earns only partial credit.
+- **Real dual-cohort contracts where required**: H11 invokes two independently locked
+  published `HostConnectionService` implementations and records the supplied legacy
+  authority object; a mock-only green result cannot earn the cohort points.
 
 ## Historical documents
 

@@ -67,9 +67,9 @@
 LLM agents increasingly rely on skills---packaged procedural knowledge---to perform specialized engineering tasks.
 Yet whether such skills actually help remains poorly measured.
 We study this in a sharply motivated setting: migrating plugins across breaking releases of a fast-evolving agent framework, where the target version postdates any model's training data.
-We present a benchmark of 22 self-contained tasks distilled from community-reported migration failures, each traceable to a verified real-world incident, spanning static diagnosis and hands-on repair.
+We present a benchmark of 24 self-contained tasks distilled from community-reported migration failures, each traceable to a verified real-world incident, spanning static diagnosis and hands-on repair.
 Both the skill corpus and the tasks are co-derived from a shared, validated body of field knowledge---upgrade cards contributed by practitioners and verified in containerized reproduction---letting us measure not only skill utility but generalization: a temporal holdout split tests tasks derived from cards written after the skill was frozen.
-Hands-on tasks are graded by host-side liveness signals (cold-booting the repaired plugin in an isolated profile) rather than output text matching, and a dedicated subset embeds adversarial conditions from real practice: misleading comments, pre-existing failures, and stale artifacts.
+Hands-on tasks are graded by host-side execution signals (cold-booting the repaired plugin in an isolated profile or invoking an exact, version-locked Host contract) rather than output text matching, and a dedicated subset embeds adversarial conditions from real practice: misleading comments, pre-existing failures, and stale artifacts.
 Paired experiments across [N] models show skills yield +[X] mean reward, concentrated where models lack prior knowledge, with [X] robustness gain on misleading-context tasks but [N] over-trust regressions.
 We release tasks, graders, skill corpus, and the card-to-task pipeline as a living, community-maintained benchmark.
 \end{abstract}
@@ -89,9 +89,9 @@ Third, real repositories are not neutral workspaces.
 They carry stale comments prescribing now-fatal changes, tests that were red before the migration began, and build artifacts that masquerade as source errors.
 A skill is useful only if the agent can follow its evidence despite this contradictory local testimony---a form of evidence-vs-testimony arbitration that existing skill benchmarks do not measure \citep{adversarialcomments,knowledgeclashes}.
 
-We present a community-grounded benchmark of 22 tasks distilled from verified plugin-migration failures in \framework{}, an open-source agent framework, spanning releases v0.1.1--v0.1.2-alpha.2.
+We present a community-grounded benchmark of 24 tasks distilled from verified plugin-migration failures in \framework{}, an open-source agent framework, spanning releases v0.1.1--v0.1.2-alpha.2.
 Both the benchmark and the skill it evaluates are co-derived from a shared corpus of upgrade cards contributed by practitioners and validated in containerized reproduction, so every task traces to a documented real-world incident.
-Tasks range from static diagnosis to hands-on repair; hands-on tasks are graded by installing the agent's repaired plugin into an isolated profile and cold-booting it under the real host, counting only host-side liveness signals.
+Tasks range from static diagnosis to hands-on repair; hands-on tasks are graded by installing the repair into an isolated profile and either cold-booting it under the real host or invoking the exact version-locked Host implementation at a narrow contract seam, counting only host-side execution signals.
 In paired experiments across [N] models with three runs per task, skills improve mean reward by +[X] over no-skill baselines and by +[X] over a generic migration-advice skill, with gains concentrated in tasks whose solutions depend on card-specific knowledge (\S\ref{sec:where-gains}).
 On a dedicated misleading-context subset, skills reduce susceptibility to comment-based traps by [X]\%, yet we also observe [N] over-trust regressions in which agents follow the skill against contradictory local evidence.
 Critically, because the community continuously produces new cards, we can freeze the skill and evaluate on tasks derived from cards written afterwards: the skill retains [X]\% of its gain on this temporal holdout, indicating transfer of methodology rather than answer recall (\S\ref{sec:holdout}).
@@ -110,7 +110,7 @@ Right top: the skill corpus; right bottom: benchmark tasks.
 
 Our contributions are fourfold:
 \begin{itemize}
-\item A benchmark of 22 self-contained, automatically graded tasks for skill-guided framework migration, including a misleading-context subset and a real-repository transfer task, released in Harbor format;
+\item A benchmark of 24 self-contained, automatically graded tasks for skill-guided framework migration, including a misleading-context subset and independent-plugin transfer tasks, released in Harbor format;
 \item A construction methodology for community-grounded benchmarks---field-sourced provenance, verification-over-trust gating, and a card-to-task pipeline that keeps the benchmark alive as the ecosystem evolves;
 \item An evaluation protocol that isolates knowledge transfer from answer recall via paired runs, a generic-skill control, card-dependence annotation, and temporal holdout;
 \item Empirical findings on where skill gains concentrate, how skills interact with misleading repository contexts, and a failure taxonomy including over-trust regressions that complement reports of skill-induced harm \citep{skillsharmful}.
@@ -166,8 +166,10 @@ Placeholder: one upgrade card instance (symptom / root cause / fix / affected ve
 \label{sec:corpus}
 
 The skill corpus consists of six skills with distinct roles in the migration workflow (audit, upgrade, release, testing, workflow orchestration, and authoring guidance).
-We focus on the flagship \emph{plugin-upgrade} skill: it covers the framework's breaking-change patterns and the evidence-first procedure for diagnosing them (symptom $\rightarrow$ observed behavior $\rightarrow$ minimal fix), and deliberately \emph{excludes} card-specific incident details.
-This content boundary matters: because the skill generalizes over patterns rather than memorizing incidents, it can in principle transfer to incidents it has never seen---which is precisely what the temporal holdout in \S\ref{sec:teaching-to-test} tests.
+We focus on the flagship \emph{plugin-upgrade} skill: it covers the framework's breaking-change patterns and the evidence-first procedure for diagnosing them (symptom $\rightarrow$ observed behavior $\rightarrow$ minimal fix).
+The maintained tree also contains supporting field examples, so an evaluation cannot assume that the current checkout is answer-free.
+Temporal tasks use the corpus frozen before their cards, and any task with a later answer-bearing example declares a pre-example \texttt{skill\_snapshot\_commit}; the evaluation protocol mounts that snapshot rather than the current tree.
+This content boundary matters: the evaluated artifact carries transferable patterns but not the held-out incident answer.
 
 \section{Benchmark Construction}
 \label{sec:construction}
@@ -187,14 +189,14 @@ Placeholder: pipeline figure (collection $\rightarrow$ structuring $\rightarrow$
 \label{fig:pipeline}
 \end{figure}
 
-Provenance is the pipeline's central invariant: each of the 22 tasks is traceable to a specific community incident and its verified card (task--incident mapping in Appendix~\ref{app:tasklist}; summary statistics in Table~\ref{tab:tasks}).
+Provenance is the pipeline's central invariant: each of the 24 tasks is traceable to a specific community incident and its verified card (task--incident mapping in Appendix~\ref{app:tasklist}; summary statistics in Table~\ref{tab:tasks}).
 This is stronger than realism-by-construction: it grounds the benchmark in \emph{verified} field knowledge and lets a third party audit any single task end to end.
 
 \subsection{Task taxonomy}
 \label{sec:taxonomy}
 
 Tasks carry a prefix denoting their interaction mode: \textbf{S} (static diagnosis: the agent inspects code and answers what is wrong / what to change), \textbf{M} (hands-on repair inside the harness), and \textbf{H} (hybrid: diagnosis gates repair).
-The 22 released tasks comprise 8~S, 5~M, and 9~H tasks.
+The 24 released tasks comprise 8~S, 5~M, and 11~H tasks.
 Each task is annotated along two dimensions: \emph{difficulty} (rated by the card authors) and \emph{card-dependence}---whether the knowledge needed to solve it is carried by the skill corpus, absent from any model's priors, or partially available---which powers the conditional analysis of \S\ref{sec:where-gains}.
 Table~\ref{tab:tasks} summarizes the pool; Appendix~\ref{app:tasklist} lists all tasks in full.
 
@@ -203,7 +205,7 @@ Table~\ref{tab:tasks} summarizes the pool; Appendix~\ref{app:tasklist} lists all
 \fbox{\parbox{0.92\columnwidth}{\centering\vspace{1.5cm}
 Placeholder: task pool summary --- counts by prefix (S/M/H), difficulty distribution, card-dependence distribution.
 \vspace{1.5cm}}}
-\caption{Summary of the 22-task pool. Full task--incident mapping and per-task metadata are in Appendix~\ref{app:tasklist}.}
+\caption{Summary of the 24-task pool. Full task--incident mapping and per-task metadata are in Appendix~\ref{app:tasklist}.}
 \label{tab:tasks}
 \end{table}
 
@@ -219,8 +221,9 @@ To our knowledge no existing skill or agent benchmark systematically instantiate
 \subsection{Grading}
 \label{sec:grading}
 
-Hands-on tasks are graded by \emph{execution-level liveness signals} rather than output text matching.
-After the agent finishes, the harness cold-boots the repaired plugin in an isolated host profile and collects host-side signals (registration, manifest validation, command dispatch, auth handshake, and smoke invocation); each task's grader scores checkpoints along a partial-credit band with explicit error tolerance (a task does not fail on cosmetic log noise, but does fail on liveness regressions).
+Hands-on tasks are graded by \emph{execution-level Host signals} rather than output text matching.
+After the agent finishes, the harness either cold-boots the repaired plugin in an isolated host profile or, for a narrow version seam, invokes independently locked real Host implementations; it collects registration, manifest, command-dispatch, auth-handshake, and smoke signals.
+Each task's grader scores checkpoints along a partial-credit band with explicit error tolerance (a task does not fail on cosmetic log noise, but does fail on execution regressions).
 Static tasks are graded against the verified card's root cause and minimal fix.
 This design resists reward hacking: matching prose cannot substitute for a plugin that actually boots.
 
@@ -259,11 +262,13 @@ The generic-skill condition isolates the value of \emph{specific} field knowledg
 \label{sec:teaching-to-test}
 
 Because skills and tasks are co-derived from the same cards, a natural objection is circularity: the skill may simply leak the test.
-We answer it three ways.
+We answer it four ways.
 First, the open-book framing: the benchmark measures knowledge transfer under a post-cutoff target, not memorization; a skill that merely repeated task answers would not generalize.
 Second, the card-dependence annotation (\S\ref{sec:taxonomy}) lets us report utility conditioned on whether the needed knowledge is absent from model priors.
 Third, and strongest, a \emph{temporal holdout}: we freeze the skill corpus at a given framework version and evaluate on tasks distilled from cards written \emph{after} the freeze.
 Holdout performance measures exactly the property a useful skill must have---transfer to incidents it has never seen.
+Fourth, task-level contamination control: when a later supporting example states the answer to a task, task metadata pins the with-skill run to a commit before that example and the repository validator proves the answer-bearing path is absent.
+The dual-cohort transfer task \texttt{H11} exercises this rule; mounting the current skill tree for that task is an invalid trial.
 
 \section{Results}
 \label{sec:results}
@@ -338,7 +343,8 @@ Placeholder: failure taxonomy --- category, definition, share of with-skill fail
 \subsection{Transfer tasks}
 \label{sec:transfer}
 
-Finally, we evaluate transfer beyond the framework's own repository: tasks distilled from cards incident to a \emph{real, independent plugin project} migrating to a newer framework alpha (\texttt{H9}).
+Finally, we evaluate transfer beyond the framework's own repository with two complementary tasks: an exact real-project source migration (\texttt{H9}) and a narrow, executable dual-cohort contract distilled from an independent plugin incident (\texttt{H11}).
+For \texttt{H11}, the evaluated skill is pinned before its answer-bearing field example, and the grader invokes two independently locked real Host implementations rather than a mock-only contract.
 [Findings placeholder: e.g., skills distilled from framework-internal incidents retain [X] of their delta on this out-of-corpus project, suggesting the patterns abstract beyond the incidents that produced them.]
 % TODO: fill in after experiments
 
@@ -362,7 +368,7 @@ Skills that tell the agent which signals to trust (observed runtime behavior ove
 
 Our findings are bounded in four ways.
 First, single ecosystem: all tasks concern one framework family; the transfer tasks of \S\ref{sec:transfer} are a first probe, not evidence of universal portability.
-Second, scale: 22 tasks is small relative to leaderboard-style benchmarks; we trade coverage for provenance and verification depth.
+Second, scale: 24 tasks is small relative to leaderboard-style benchmarks; we trade coverage for provenance and verification depth.
 Third, adversarial realism: the trap conditions reflect what the community actually reported, so their mix is only as complete as community reporting is.
 Fourth, contamination and version currency: we cannot rule out that some model vendors have ingested public framework or skill-corpus material (we flag suspected cases per model); and any benchmark of a moving target is perishable---the living-benchmark model in \S\ref{sec:discussion} is our mitigation.
 We additionally note the baseline-pollution caveat that models shipping a native skill catalog may already carry equivalent knowledge; we report native-catalog status per model.
@@ -370,7 +376,7 @@ We additionally note the baseline-pollution caveat that models shipping a native
 \section*{Ethics}
 
 All upgrade cards and incident references are used with contributor consent, and contributors are credited per card in the released corpus.
-All fixtures are synthetic or unreleasable packages constructed for the benchmark; no user data appears anywhere in tasks, skills, or graders.
+Fixtures are private synthetic packages or properly licensed public source slices; no user data appears anywhere in tasks, skills, or graders.
 The unattended authorization protocol grants agents only in-fixture permissions, and all execution occurs locally in isolated profiles.
 
 % \section*{Acknowledgments} % omitted for review
@@ -381,7 +387,7 @@ The unattended authorization protocol grants agents only in-fixture permissions,
 
 \section{Full Task List and Provenance}
 \label{app:tasklist}
-Placeholder: all 22 task cards with metadata (prefix, difficulty, card-dependence, adversarial family) and the task--incident mapping.
+Placeholder: all 24 task cards with metadata (prefix, difficulty, card-dependence, adversarial family) and the task--incident mapping.
 
 \section{Judge Grading Rubrics}
 \label{app:rubrics}

@@ -2,7 +2,7 @@
 
 [中文说明](README.zh.md)
 
-This directory holds the technical report on the effectiveness of the dsh plugin-upgrade skills. The report studies whether skills---procedural-knowledge documents loaded at inference time---actually help in framework migration: we build a paired-evaluation benchmark from 22 community-reported, verified plugin-migration failures in the dsh plugin ecosystem, and measure the distribution of skill gains, robustness to misleading context, temporal-holdout generalization, and over-trust failure modes.
+This directory holds the technical report on the effectiveness of the dsh plugin-upgrade skills. The report studies whether skills---procedural-knowledge documents loaded at inference time---actually help in framework migration: we build a paired-evaluation benchmark from 24 community-reported, verified plugin-migration failures in the dsh plugin ecosystem, and measure the distribution of skill gains, robustness to misleading context, temporal-holdout generalization, and over-trust failure modes.
 
 ## Directory structure
 

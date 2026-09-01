@@ -1,0 +1,11 @@
+{
+  "name": "@demo/dsh-dual-cohort-rpc-fixture",
+  "version": "0.0.0-private",
+  "description": "Private benchmark fixture distilled from the dsh-mnemon dual-cohort RPC incident",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "probe": "node scripts/probe-cohorts.mjs"
+  }
+}

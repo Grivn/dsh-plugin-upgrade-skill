@@ -152,6 +152,20 @@ not run every test from the Linux lane. The real Connection test proves Web rout
 does not replace the token-to-Cookie, boot-manifest, bundle-load, DOM-marker, and page-error acceptance
 required by [DSH-0.1.2-A1-19](../references/v0.1.2-alpha.1.md).
 
+## Benchmark distillation and leakage boundary
+
+The incident is distilled into executable task
+[H11-dual-cohort-rpc](https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill/blob/main/benchmark/tasks/H11-dual-cohort-rpc/README.md). Its grader invokes
+the independently locked, published rc.2 and alpha.2 `HostConnectionService` implementations and
+checks real route registration, both `remoteAccess` authority vectors, and the absence of
+version/arity/failure-retry branches. alpha.2 substitutes for the unpublished alpha.1 only at this
+fixed two-argument seam; it is not evidence that the releases are equivalent elsewhere.
+
+This page states the answer, so H11 with-skill trials must mount the pre-contribution skill commit
+`232b00a2331a397789f7d61c57067e73d12fdac0`, never the current skill directory. Task provenance
+records the materialization command, three-run multi-model recommendation, and unverified boundaries;
+this contribution does not report model scores that have not been run.
+
 ## Transferable conclusions
 
 1. Dual-cohort completion means the new target passes without regressing the current installable

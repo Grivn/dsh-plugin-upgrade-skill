@@ -1,0 +1,37 @@
+schema_version = "1.4"
+# Harbor task: a real dual-cohort Host Connection registration regression.
+[task]
+name = "dsh-plugin-upgrade/h11-dual-cohort-rpc"
+version = "1.1.0"
+description = "Repair an alpha-style two-argument RPC registration so one branch-free plugin implementation preserves rc.2 authority semantics and also registers on the newer Connection host"
+keywords = ["dsh", "plugin-migration", "dual-cohort", "rpc", "security", "harbor"]
+
+[metadata]
+difficulty = "hard"
+category = "programming"
+tags = ["dsh", "plugin-upgrade", "dual-cohort", "real-incident", "english-prompt"]
+execution_contract = "BENCHMARK-AUTH-v1"
+evaluation_partition = "closed-book-transfer"
+skill_snapshot_commit = "232b00a2331a397789f7d61c57067e73d12fdac0"
+skill_snapshot_tree = "f24c0e2cb81428d36456b64b4f613bd2c38e953b"
+skill_snapshot_archive_sha256 = "4c404334df82f066a9f909395586ef2cde3eaebfcdca800fd56dd539f7d3abff"
+skill_snapshot_path = "skills/plugin-upgrade"
+incident_repository = "https://github.com/omdsh-dev/dsh-mnemon"
+incident_bad_commit = "30d7476ba58f86e417959aae64d4dd3fb80f0434"
+incident_fix_commit = "b50a504dbe738aa359cd6ef8e4fd790ed9c19a10"
+source_dsh_commit = "b150a551b8d465e31e418e1b2eaf5e79bbb7d28e"
+preview_dsh_commit = "cd5ef8148158c3a752a658978873241fdf8e2bbc"
+executable_new_cohort_commit = "0a53fb55bea101816fa226bb964ae2bed71c343b"
+
+[agent]
+timeout_sec = 900.0
+network_mode = "no-network"
+
+[verifier]
+timeout_sec = 300.0
+
+[environment]
+network_mode = "public"
+cpus = 1
+memory_mb = 2048
+storage_mb = 4096

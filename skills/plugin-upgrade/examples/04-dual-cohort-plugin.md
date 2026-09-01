@@ -140,6 +140,17 @@ mount；没有覆盖真实 Provider/API 凭据；Windows lane 没有运行 Linux
 Web route 注册契约，但不能替代 [DSH-0.1.2-A1-19](../references/v0.1.2-alpha.1.md) 要求的 token→Cookie、
 boot manifest、bundle load、DOM marker 和 page-error 浏览器验收。
 
+## Benchmark 转化与防泄漏边界
+
+该事故已被提炼为可执行的 [H11-dual-cohort-rpc](https://github.com/oh-my-dsh/dsh-plugin-upgrade-skill/blob/main/benchmark/tasks/H11-dual-cohort-rpc/README.md)：
+grader 会分别调用锁定的 rc.2 与 alpha.2 已发布 `HostConnectionService`，验证真实 route 注册、两种
+`remoteAccess` 配置的 authority 向量，以及实现没有版本、arity 或失败重试分支。alpha.2 只在这个
+固定的双参数 seam 上替代未发布的 alpha.1；这不表示两版整体等价。
+
+本页已经包含答案，因此 H11 的 with-skill 评测必须挂载本贡献之前的固定 skill commit
+`232b00a2331a397789f7d61c57067e73d12fdac0`，不能使用当前 skill 目录。任务 provenance 记录了
+物化命令、多模型三次重复建议和未验证边界；本贡献不把尚未执行的模型分数写成结果。
+
 ## 可复用结论
 
 1. 双 cohort 完成条件是“新目标通过且现有可安装基线不回归”，不是只让 source preview 编译。
