@@ -48,7 +48,7 @@ The judge also checks the installed Connection package versions before scoring.
 Example 04 contains the exact diagnosis and solution. A with-skill trial against the
 current tree would therefore measure answer retrieval, not transfer. H11 is admitted
 only with the plugin-upgrade skill frozen at commit
-`232b00a2331a397789f7d61c57067e73d12fdac0`, the upstream-main
+`2de49059ec3178e23ea644cd78e7d20575b74745`, the upstream-main
 parent of the contribution; that tree contains the general migration/card procedure
 but not Example 04 or H11.
 
@@ -56,18 +56,18 @@ Materialize the evaluated skill without copying or maintaining a second skill co
 
 ```sh
 h11_snapshot_root="$(mktemp -d /tmp/h11-skill-snapshot.XXXXXX)"
-git archive 232b00a2331a397789f7d61c57067e73d12fdac0 skills/plugin-upgrade \
+git archive 2de49059ec3178e23ea644cd78e7d20575b74745 skills/plugin-upgrade \
   > "$h11_snapshot_root/skill.tar"
 node -e 'const f=require("node:fs"),c=require("node:crypto");const got=c.createHash("sha256").update(f.readFileSync(process.argv[1])).digest("hex");if(got!==process.argv[2])throw new Error(`snapshot hash mismatch: ${got}`)' \
   "$h11_snapshot_root/skill.tar" \
-  4c404334df82f066a9f909395586ef2cde3eaebfcdca800fd56dd539f7d3abff
+  59f628fa4a3ab583690e2511356a4b4cd192212a0a63e8aa854b728cbdfb0084
 mkdir "$h11_snapshot_root/tree"
 tar -xf "$h11_snapshot_root/skill.tar" -C "$h11_snapshot_root/tree"
 test ! -e "$h11_snapshot_root/tree/skills/plugin-upgrade/examples/04-dual-cohort-plugin.md"
 ```
 
 The pinned `skills/plugin-upgrade` tree object is
-`f24c0e2cb81428d36456b64b4f613bd2c38e953b`. The commit, tree, and archive hash
+`cf8f247a2f260347be559740f841c579b1f1ed64`. The commit, tree, and archive hash
 identify the same evaluated corpus independently of a mutable branch name.
 
 Attach `$h11_snapshot_root/tree/skills/plugin-upgrade` for the with-skill condition.

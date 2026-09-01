@@ -182,9 +182,9 @@ for (const [taskId, mode] of expectedModes) {
   }
 
   if (taskId === 'H11-dual-cohort-rpc') {
-    const snapshot = '232b00a2331a397789f7d61c57067e73d12fdac0'
-    const snapshotTree = 'f24c0e2cb81428d36456b64b4f613bd2c38e953b'
-    const snapshotArchive = '4c404334df82f066a9f909395586ef2cde3eaebfcdca800fd56dd539f7d3abff'
+    const snapshot = '2de49059ec3178e23ea644cd78e7d20575b74745'
+    const snapshotTree = 'cf8f247a2f260347be559740f841c579b1f1ed64'
+    const snapshotArchive = '59f628fa4a3ab583690e2511356a4b4cd192212a0a63e8aa854b728cbdfb0084'
     const agentBlock = taskToml.match(/\[agent\]([\s\S]*?)(?=\n\[|$)/)?.[1] ?? ''
     for (const [pattern, label] of [
       [new RegExp(`^skill_snapshot_commit = "${snapshot}"$`, 'm'), 'fixed pre-answer skill snapshot'],

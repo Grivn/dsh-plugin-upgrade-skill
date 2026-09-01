@@ -21,7 +21,7 @@ skill-freeze evidence.
 - **Oracle:** `harbor run -p benchmark/tasks/H11-dual-cohort-rpc -a oracle`, expected
   reward `1.0`.
 - **Evaluation boundary:** use the pre-contribution plugin-upgrade skill snapshot at
-  commit `232b00a2331a397789f7d61c57067e73d12fdac0`, not the current skill tree
+  commit `2de49059ec3178e23ea644cd78e7d20575b74745`, not the current skill tree
   containing Example 04. The task is a closed-book transfer case; current Example 04
   states the answer.
 
