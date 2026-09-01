@@ -37,7 +37,7 @@
 %
 % and set <dim> to something 5cm or larger.
 
-\title{Instructions for *ACL Proceedings}
+\title{Do Migration Skills Actually Help? A Community-Grounded Benchmark for Skill-Guided Framework Migration}
 
 % Author information can be set in various styles:
 % For several authors from the same institution:
@@ -107,9 +107,14 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-This document is a supplement to the general instructions for *ACL authors. It contains instructions for using the \LaTeX{} style files for ACL conferences.
-The document itself conforms to its own specifications, and is therefore an example of what your manuscript should look like.
-These instructions should be used both for papers submitted for review and for final versions of accepted papers.
+LLM agents increasingly rely on skills---packaged procedural knowledge---to perform specialized engineering tasks.
+Yet whether such skills actually help remains poorly measured.
+We study this in a sharply motivated setting: migrating plugins across breaking releases of a fast-evolving agent framework, where the target version postdates any model's training data.
+We present a benchmark of 22 self-contained tasks distilled from community-reported migration failures, each traceable to a verified real-world incident, spanning static diagnosis and hands-on repair.
+Both the skill corpus and the tasks are co-derived from a shared, validated body of field knowledge---upgrade cards contributed by practitioners and verified in containerized reproduction---letting us measure not only skill utility but generalization: a temporal holdout split tests tasks derived from cards written after the skill was frozen.
+Hands-on tasks are graded by host-side liveness signals (cold-booting the repaired plugin in an isolated profile) rather than output text matching, and a dedicated subset embeds adversarial conditions from real practice: misleading comments, pre-existing failures, and stale artifacts.
+Paired experiments across [N] models show skills yield +[X] mean reward, concentrated where models lack prior knowledge, with [X] robustness gain on misleading-context tasks but [N] over-trust regressions.
+We release tasks, graders, skill corpus, and the card-to-task pipeline as a living, community-maintained benchmark.
 \end{abstract}
 
 \section{Introduction}
