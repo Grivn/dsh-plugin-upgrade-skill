@@ -1,7 +1,7 @@
 # dsh plugin upgrade tasks (benchmark v2.3 · Harbor format)
 
-The 21 plugin-upgrade tasks measure one thing: **once an AI has our upgrade skill
-installed, will it actually upgrade the plugin**. The first 9 are written exams (read
+The 22 plugin-upgrade tasks measure one thing: **once an AI has our upgrade skill
+installed, will it actually upgrade the plugin**. The first 10 are written exams (read
 the code, produce the answer); the last 12 are hands-on (actually install dsh and run
 the plugin — whether it is alive is obvious at a glance). Every task ships with
 auto-grading, so no human marking is involved.
@@ -36,6 +36,7 @@ honestly instead of quietly fixing it and pretending nothing happened).
 | H6-remote-error-trap | Static | An alpha.2 plugin still on 0.1.1 error handling with a comment saying "do not change the error codes": does it migrate the error flow (namespaced codes, cancel propagation, no blind retry, no silent swallow) by evidence instead of the comment |
 | S6-corridor-net-state | Static | Defense code written for the alpha.1 intermediate state (deleting `SessionEvent.ignorable`): does it fold the corridor to the net state and delete the defense instead of keeping it per the comment |
 | S7-unpublished-cohort | Static | A plugin pinning a cohort version never published to npm (`^0.1.2-alpha.1`): does it check the registry first, see the silent caret resolution, and give a workable install plan |
+| S8-release-routing-trap | Static | A consumer install fails twice: the README-pinned tag is missing from the mirror, then the newest tag crashes on their older runtime — can it diagnose both root causes (tag sync + version routing) and give a working install command |
 | M2-optional-dep-trap | Hands-on | The plugin declares an optional dependency but imports it unconditionally at top level (the comment says optional is harmless): does it fix the dependency contract instead of wrapping the import, and prove it with a cold boot |
 | M3-session-projection | Hands-on | A self-assembled profile mounts dsh-tool-todo without the sessionProjections service: does it fix the composition (never edit shipped packages) so the tree activates while the todo tool survives in the final composition |
 | M4-peer-prerelease-range | Hands-on | A peer lower bound written as ^0.1.0-rc.8 does not match 0.1.2-alpha.2 under npm semver's prerelease rule: does it rewrite the bound to the target cohort instead of widening it into a meaningless range |
@@ -156,7 +157,7 @@ harbor run -p benchmark/tasks/S1-static-scan -a oracle
 # evaluate a single task with an agent
 harbor run -p benchmark/tasks/M1-host-migration -a claude-code -m anthropic/claude-opus-4-1
 
-# all 21 tasks: pointing -p at the tasks/ directory runs them as a dataset batch
+# all 22 tasks: pointing -p at the tasks/ directory runs them as a dataset batch
 harbor run -p benchmark/tasks -a claude-code -m anthropic/claude-opus-4-1
 ```
 
@@ -168,7 +169,7 @@ the judge's per-item reasons are in the verifier log.
 
 ### Unattended authorization
 
-All 21 `instruction.md` files carry the `BENCHMARK-AUTH-v1` marker: the task prompt
+All 22 `instruction.md` files carry the `BENCHMARK-AUTH-v1` marker: the task prompt
 itself is the user's confirmation of the plan and the execution within the stated
 scope. The agent should complete the necessary analysis/planning and then proceed — it
 must not stop just because Harbor will not send a second round of "confirmation". The
@@ -252,7 +253,7 @@ environment, and it does not leak migration answers to either round.
   adding ordinary fixture tasks** — the point is to stop anyone from accidentally
   publishing fake plugins to npm.
 - When adding a task, scaffold it with `harbor task init`, then fill in
-  judge / solve.sh following the layout of the existing 21 tasks, and verify the
+  judge / solve.sh following the layout of the existing 22 tasks, and verify the
   reference answer scores 1.0 with `harbor run -p <task> -a oracle`.
 - After adding or modifying prompts, run
   `node benchmark/scripts/validate-execution-contract.mjs` to make sure the
