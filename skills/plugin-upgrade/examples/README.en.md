@@ -10,7 +10,7 @@ Every example must state its plane, verification scope, and whether it is execut
 | [02-host-side-plugin.md](02-host-side-plugin.md) ([EN](02-host-side-plugin.en.md)) | Host APIProxy → owning domain service | Executable control flow; verified in an alpha.2 container |
 | [03-client-remote-plugin.md](03-client-remote-plugin.md) ([EN](03-client-remote-plugin.en.md)) | Web Client `ctx.remote` / `RemoteResult` | Executable control flow; product Web smoke pending |
 | [face-contracts/](face-contracts/) | Per-plane Host/Client regression guard | `node .../check.mjs` |
-| `04-dual-cohort-plugin.md` (TBD) | Dual-cohort coexistence | Not implemented |
+| [04-dual-cohort-plugin.md](04-dual-cohort-plugin.md) ([EN](04-dual-cohort-plugin.en.md)) | Real sample: dsh-mnemon supporting the rc.2 registry and alpha.1 source cohorts together | Field record: full verification in both lanes plus a real Connection registration regression; no dual-cohort product-browser mount |
 | `05-third-party-plugin-patch.md` (TBD) | Third-party prebuilt plugin patch | Not implemented |
 | [06-real-world-batch-migration.md](06-real-world-batch-migration.md) ([EN](06-real-world-batch-migration.en.md)) | Real batch-migration record (six plugins, three shapes, with a pitfall list) | Field record: real boot verification + unit-test regression from six real plugins (not an executable fixture in this repo) |
 | [07-multi-repo-batch-migration.md](07-multi-repo-batch-migration.md) ([EN](07-multi-repo-batch-migration.en.md)) | Batch migration runbook for 17 tool plugins across three version steps (sync audit, batch gates, push, and profile wrap-up) | Field record: the consecutive migration process across three version steps (technical touchpoints reference the cards) |
