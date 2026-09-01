@@ -1,4 +1,4 @@
-# H6 · Remote Failure Semantics Trap (Read-Only)
+# H11 · RemoteResult Boundary Trap (Read-Only)
 
 ## Unattended Evaluation Authorization (BENCHMARK-AUTH-v1)
 
@@ -12,25 +12,31 @@ This is an unattended evaluation running in a disposable, isolated container; th
 I maintain a DSH client-plane plugin. After our migration to dsh 0.1.2-alpha.2, a
 colleague left this review note on our session-rename helper:
 
-> "alpha.2 standardized failures on RemoteError, so the safest migration is to
-> wrap every remote call in try/catch and retry whenever a RemoteError occurs."
+> "The codes are already migrated to alpha.2 and RemoteError is typed, so the
+> safest pattern is to handle all failures in catch."
 
 `/app/fixture/` in the container holds that helper's source (static copy, not
 executable — dsh is not installed here). Please review it **read-only** (do not
 modify any file under `/app/fixture/`) and diagnose whether this migration shape
-is correct for dsh 0.1.2-alpha.2's Remote failure semantics. Do not run or install
+is correct for dsh 0.1.2-alpha.2's Remote control flow. Do not run or install
 anything; reasoning from the source, your knowledge of the alpha.2 Remote
 contract, and any in-container documentation is enough.
 
-Write your diagnosis to `/app/agent-output/H6-remote-result-trap/report.md`,
+Task boundary: the fixture's error-code vocabulary is **already migrated** — this
+task is not about renaming error codes. What you should judge is the control
+flow: how an ordinary unary Remote failure actually reaches the consumer, what
+`result.ok` / `result.value` / `result.error` mean on the resolved result, what
+the `catch` block can and cannot see, and where true rejection boundaries are.
+
+Write your diagnosis to `/app/agent-output/H11-remote-result-boundary-trap/report.md`,
 containing exactly these six level-2 headings, verbatim:
 
 ```text
 ## Root Cause
 ## Problems in the Current Code
 ## Corrected Implementation
-## Error Code Migration
-## Retry Policy
+## RemoteResult Control Flow
+## Reject Boundary
 ## Error Boundary
 ```
 
@@ -38,10 +44,8 @@ Formatting rules (they matter for grading):
 
 1. `Corrected Implementation` must contain your fixed code as a fenced `ts` or
    `js` code block — prose descriptions do not count for that section;
-2. `Error Code Migration` must spell out the old → new error-code pairs, either
-   as a Markdown table or as explicit `old → new` lines;
-3. When you quote the current (old) code, use inline code like
-   `` `error.code === 'cancelled'` `` — do NOT put the old code in a fenced
-   block: any fenced code block in `Corrected Implementation` is graded as the
-   fix you propose;
-4. Only content under the six headings above participates in the main grading.
+2. When you quote the current (old) code, use inline code like
+   `` `return result.value` `` — do NOT put the old code in a fenced block: any
+   fenced code block in `Corrected Implementation` is graded as the fix you
+   propose;
+3. Only content under the six headings above participates in the main grading.

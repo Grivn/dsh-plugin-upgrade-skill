@@ -25,6 +25,7 @@ const expectedModes = new Map([
   ['S6-corridor-net-state', 'readonly'],
   ['S7-unpublished-cohort', 'readonly'],
   ['S8-release-routing-trap', 'readonly'],
+  ['H11-remote-result-boundary-trap', 'readonly'],
   ['M2-optional-dep-trap', 'mutable'],
   ['M3-session-projection', 'mutable'],
   ['M4-peer-prerelease-range', 'mutable'],

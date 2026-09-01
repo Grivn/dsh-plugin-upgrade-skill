@@ -1,7 +1,0 @@
-{
-  "name": "h6-remote-result-trap-fixture",
-  "version": "0.1.0",
-  "description": "H6 benchmark fixture: a session-rename helper migrated to the dsh 0.1.2-alpha.2 Remote failure vocabulary (benchmark-only, never publish)",
-  "private": true,
-  "type": "module"
-}

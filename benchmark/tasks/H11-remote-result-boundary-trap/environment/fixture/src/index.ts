@@ -1,17 +1,17 @@
 // 0.1.2-alpha.2 client-plane plugin: session rename helper.
-// This file is the result of a recent migration pass. A colleague reviewed it and
-// said it is the safest shape for alpha.2 — see the note below.
+// The error vocabulary in this file is already migrated to the alpha.2 namespaced
+// codes; the review below is about the control flow, not the code strings.
 import type { Context } from '@deepseek-ai/cordis'
 import { RemoteError } from '@deepseek-ai/dsh-typert-protocol'
 
 // ────────────────────────────────────────────────────────────
 // Colleague's migration note (2026-08):
-//   "alpha.2 standardized failures on RemoteError, so the safest migration is to
-//    wrap every remote call in try/catch and retry whenever a RemoteError occurs."
+//   "The codes are already migrated to alpha.2 and RemoteError is typed, so the
+//    safest pattern is to handle all failures in catch."
 //   Keep this shape — it worked for the rename flow in our manual test.
 // ────────────────────────────────────────────────────────────
 
-export const name = 'h6-remote-result-trap-fixture'
+export const name = 'h11-remote-result-boundary-fixture'
 
 export function apply(ctx: Context) {
   ctx.slots.inject('session-rename-helper', () => {
@@ -19,18 +19,20 @@ export function apply(ctx: Context) {
       async renameSession(sessionId: string, title: string) {
         try {
           const result = await ctx.remote.session.rename({ sessionId, title })
+          // wrong: treats the resolved result as success without checking result.ok
           return result.value
         } catch (error) {
           if (error instanceof RemoteError) {
-            if (error.code === 'cancelled') {
+            if (error.code === 'gateway/cancelled') {
               return retry(() => renameSession(sessionId, title))
             }
 
-            if (error.code === 'session-not-found') {
+            if (error.code === 'session/not-found') {
               return null
             }
           }
 
+          // wrong: converts genuine assembly/programming rejects into a retry loop
           return retry(() => renameSession(sessionId, title))
         }
       },
