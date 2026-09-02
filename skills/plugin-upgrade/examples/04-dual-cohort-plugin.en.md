@@ -162,7 +162,7 @@ version/arity/failure-retry branches. alpha.2 substitutes for the unpublished al
 fixed two-argument seam; it is not evidence that the releases are equivalent elsewhere.
 
 This page states the answer, so H11 with-skill trials must mount the pre-contribution skill commit
-`2de49059ec3178e23ea644cd78e7d20575b74745`, never the current skill directory. Task provenance
+`7d33bf4c492da250c94f48aebd29bb16877d7a36`, never the current skill directory. Task provenance
 records the materialization command, three-run multi-model recommendation, and unverified boundaries;
 this contribution does not report model scores that have not been run.
 

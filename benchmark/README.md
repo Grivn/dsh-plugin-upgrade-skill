@@ -264,7 +264,7 @@ environment, and it does not leak migration answers to either round.
 Tasks carrying `metadata.skill_snapshot_commit` are an exception to attaching the
 current skill tree. Their provenance document identifies the exact pre-answer skill
 snapshot that must be materialized for the with-skill condition. In particular, H11
-must use `2de49059ec3178e23ea644cd78e7d20575b74745`: the current Example 04 contains
+must use `7d33bf4c492da250c94f48aebd29bb16877d7a36`: the current Example 04 contains
 its answer and would turn a transfer test into retrieval. No-skill and generic-skill
 runs keep the same task image and prompt.
 

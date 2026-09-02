@@ -56,8 +56,31 @@ harbor run -p benchmark/tasks/H11-dual-cohort-rpc -a oracle
 Trials: 1; Exceptions: 0; Mean reward: 1.000; runtime: 21s
 ```
 
-Both manual calibration runs used `--network none` after image construction. The
-repository validators also confirmed 24 registered tasks, the `BENCHMARK-AUTH-v1`
-contract, the fixed skill
-snapshot with Example 04 absent, all Markdown/card links, and the plugin-upgrade skill
-schema. No agent/model result is inferred from oracle admission.
+The manual calibration runs used `--network none` after image construction. At
+initial admission, the repository validators confirmed 24 registered tasks, the
+`BENCHMARK-AUTH-v1` contract, the fixed skill snapshot with Example 04 absent, all
+Markdown/card links, and the plugin-upgrade skill schema. No agent/model result is
+inferred from oracle admission.
+
+## Review follow-up validation
+
+After rebasing onto upstream commit
+`7d33bf4c492da250c94f48aebd29bb16877d7a36` on 2026-09-02, the grader was tightened
+in response to review. Registration and authority checks now align by channel instead
+of relying on source order, while the branch-free check scans every file under
+`fixture/src/` recursively. The frozen skill commit, tree, and archive hashes were
+also refreshed to that latest pre-answer upstream baseline.
+
+The following focused calibrations ran in the pinned task image with
+`--network none`:
+
+| Candidate variation | Reward | Verified boundary |
+|---|---:|---|
+| Oracle with write/settings registration order swapped | `1.00` | Registration order is not an unstated contract |
+| Oracle authority multiset assigned to the wrong channels | `0.85` | Authority remains exact per channel, not merely as a multiset |
+| Oracle plus executable `fn.length` inspection in `src/config.js` | `0.90` | The branch-free gate covers helper modules under `src/` |
+
+The complete repository suite then passed with 27 registered tasks, including task
+registry, evaluation-snapshot, checkpoint, runtime, and release-smoke validation. A
+fresh Harbor 0.22.0 oracle run completed with one trial, zero exceptions, and mean
+reward `1.000` in under 10 seconds.

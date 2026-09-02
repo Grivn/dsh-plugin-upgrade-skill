@@ -4,6 +4,13 @@
 import { execFile } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
+import {
+  authorityPolicyMatches,
+  formatAuthorities,
+  inspectBranching,
+  registrationsFromCalls,
+  sameMembers,
+} from './judge-utils.mjs'
 
 const FIXTURE = '/app/fixture'
 const EXPECTED_CHANNELS = [
@@ -12,6 +19,20 @@ const EXPECTED_CHANNELS = [
   '/mnemon.write',
   '/mnemon.settings',
 ]
+const EXPECTED_AUTHORITIES = {
+  'read-only': {
+    '/mnemon.read': 'trusted-host',
+    '/mnemon.activation': 'trusted-host',
+    '/mnemon.write': 'loopback',
+    '/mnemon.settings': 'loopback',
+  },
+  'trusted-host': {
+    '/mnemon.read': 'trusted-host',
+    '/mnemon.activation': 'trusted-host',
+    '/mnemon.write': 'trusted-host',
+    '/mnemon.settings': 'trusted-host',
+  },
+}
 const COHORTS = [
   { name: 'rc2', root: '/opt/dsh-cohorts/rc2', version: '0.1.1-rc.2' },
   { name: 'alpha2', root: '/opt/dsh-cohorts/alpha2', version: '0.1.2-alpha.2' },
@@ -73,26 +94,26 @@ async function main() {
 
   let policyPasses = 0
   for (const remoteAccess of ['read-only', 'trusted-host']) {
-    const expected = remoteAccess === 'read-only'
-      ? ['trusted-host', 'trusted-host', 'loopback', 'loopback']
-      : ['trusted-host', 'trusted-host', 'trusted-host', 'trusted-host']
+    const expected = EXPECTED_AUTHORITIES[remoteAccess]
+    const expectedRegistrations = Object.entries(expected)
+      .map(([channel, authority]) => ({ channel, authority }))
+    const expectedDescription = formatAuthorities(expectedRegistrations)
     const results = COHORTS.map((cohort) => probes.get(`${cohort.name}:${remoteAccess}`))
-    const ok = results.every((result) => result.registrationOk
-      && JSON.stringify(result.authorities) === JSON.stringify(expected))
+    const ok = results.every((result) => authorityPolicyMatches(result, expected))
     if (ok) {
       policyPasses += 1
-      reasons.push(`${remoteAccess}: one call shape preserves authorities ${expected.join(', ')}`)
+      reasons.push(`${remoteAccess}: one call shape preserves per-channel authorities ${expectedDescription}`)
     } else {
       for (const [index, result] of results.entries()) {
-        if (JSON.stringify(result.authorities) !== JSON.stringify(expected)) {
-          reasons.push(`${COHORTS[index].name}/${remoteAccess}: expected authorities ${expected.join(', ')}, got ${result.authorities.map(String).join(', ') || 'none'}`)
+        if (!authorityPolicyMatches(result, expected)) {
+          reasons.push(`${COHORTS[index].name}/${remoteAccess}: expected authorities ${expectedDescription}, got ${formatAuthorities(result.registrations)}`)
         }
       }
     }
   }
   score += policyPasses * 15
 
-  const branchCheck = await inspectBranching()
+  const branchCheck = await inspectBranching(`${FIXTURE}/src`)
   if (branchCheck.ok) {
     score += 10
     reasons.push('source uses no version, arity, source-text, or exception-retry cohort branch')
@@ -136,48 +157,24 @@ async function probe(register, cohort, remoteAccess) {
     }
     await register(recordingConnection, { remoteAccess })
     const channels = calls.map((args) => args[0])
-    const registrationOk = JSON.stringify(channels) === JSON.stringify(EXPECTED_CHANNELS)
-      && JSON.stringify(routes) === JSON.stringify(EXPECTED_CHANNELS)
+    const registrationOk = sameMembers(channels, EXPECTED_CHANNELS)
+      && sameMembers(routes, EXPECTED_CHANNELS)
     return {
       remoteAccess,
       registrationOk,
-      authorities: calls.map((args) => args[2]?.authority),
+      registrations: registrationsFromCalls(calls),
       error: registrationOk
         ? undefined
-        : `expected calls/routes ${EXPECTED_CHANNELS.join(', ')}; calls=${channels.join(', ') || 'none'} routes=${routes.join(', ') || 'none'}`,
+        : `expected call/route set ${EXPECTED_CHANNELS.join(', ')}; calls=${channels.join(', ') || 'none'} routes=${routes.join(', ') || 'none'}`,
     }
   } catch (error) {
     return {
       remoteAccess,
       registrationOk: false,
-      authorities: calls.map((args) => args[2]?.authority),
+      registrations: registrationsFromCalls(calls),
       error: error instanceof Error ? error.message : String(error),
     }
   }
-}
-
-async function inspectBranching() {
-  const source = stripComments(await readFile(`${FIXTURE}/src/register.js`, 'utf8'))
-  const checks = [
-    [/\.length\b/, 'function arity inspection'],
-    [/\b(?:dsh|connection|host)Version\b/i, 'version variable'],
-    [/\bsemver\b|0\.1\.[12]/i, 'version parsing/literal'],
-    [/package\.json|process\.env|import\.meta\.resolve/i, 'environment/package capability probe'],
-    [/\.toString\s*\(/, 'implementation source inspection'],
-    [/\bcatch\s*\(/, 'exception retry/fallback'],
-  ]
-  const hits = checks.filter(([pattern]) => pattern.test(source)).map(([, label]) => label)
-  return { ok: hits.length === 0, hits }
-}
-
-// Explanatory comments may name rejected strategies; score executable text only.
-// The task fixture contains no regex literals, so this deliberately small lexer is
-// sufficient and avoids adding a parser dependency to the sealed judge.
-function stripComments(source) {
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/^\s*\/\/.*$/gm, '')
-    .replace(/\/\/.*$/gm, '')
 }
 
 async function cohortVersion(cohort) {

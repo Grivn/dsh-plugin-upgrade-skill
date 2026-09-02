@@ -148,7 +148,7 @@ grader 会分别调用锁定的 rc.2 与 alpha.2 已发布 `HostConnectionServic
 固定的双参数 seam 上替代未发布的 alpha.1；这不表示两版整体等价。
 
 本页已经包含答案，因此 H11 的 with-skill 评测必须挂载本贡献之前的固定 skill commit
-`2de49059ec3178e23ea644cd78e7d20575b74745`，不能使用当前 skill 目录。任务 provenance 记录了
+`7d33bf4c492da250c94f48aebd29bb16877d7a36`，不能使用当前 skill 目录。任务 provenance 记录了
 物化命令、多模型三次重复建议和未验证边界；本贡献不把尚未执行的模型分数写成结果。
 
 ## 可复用结论
