@@ -177,6 +177,7 @@ function stripComments(source) {
   return source
     .replace(/\/\*[\s\S]*?\*\//g, '')
     .replace(/^\s*\/\/.*$/gm, '')
+    .replace(/\/\/.*$/gm, '')
 }
 
 async function cohortVersion(cohort) {
